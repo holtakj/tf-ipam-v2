@@ -11,3 +11,16 @@ override.tf.json
 *_override.tf.json
 .terraformrc
 terraform.rc
+.terraform.lock.hcl
+# Local .env files
+.env
+.env.*
+# Ignore .tfvars files, which are likely to contain sensitive data such as API keys and passwords
+*.tfvars
+*.tfvars.json
+# Ignore .tfvars files in the root directory, which may contain sensitive data
+/*.tfvars
+/*.tfvars.json
+# Ignore .tfvars files in any subdirectory, which may contain sensitive data
+**/*.tfvars
+**/*.tfvars.json

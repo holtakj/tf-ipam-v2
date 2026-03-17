@@ -131,10 +131,10 @@ locals {
       start_int = local.base_start_int
       end_int   = local.base_end_int
     }] : [],
-    length(local.sorted_blocking_ranges) > 0 && local.base_start_int < local.sorted_blocking_ranges[0].start_int ? [{
+    length(local.sorted_blocking_ranges) > 0 ? (local.base_start_int < local.sorted_blocking_ranges[0].start_int ? [{
       start_int = local.base_start_int
       end_int   = local.sorted_blocking_ranges[0].start_int - 1
-    }] : [],
+    }] : []) : [],
     [
       for index in range(length(local.sorted_blocking_ranges) > 0 ? length(local.sorted_blocking_ranges) - 1 : 0) : {
         start_int = local.sorted_blocking_ranges[index].end_int + 1
@@ -142,10 +142,10 @@ locals {
       }
       if local.sorted_blocking_ranges[index].end_int + 1 <= local.sorted_blocking_ranges[index + 1].start_int - 1
     ],
-    length(local.sorted_blocking_ranges) > 0 && local.sorted_blocking_ranges[length(local.sorted_blocking_ranges) - 1].end_int < local.base_end_int ? [{
+    length(local.sorted_blocking_ranges) > 0 ? (local.sorted_blocking_ranges[length(local.sorted_blocking_ranges) - 1].end_int < local.base_end_int ? [{
       start_int = local.sorted_blocking_ranges[length(local.sorted_blocking_ranges) - 1].end_int + 1
       end_int   = local.base_end_int
-    }] : []
+    }] : []) : []
   )
 
   # For every CIDR size, compute free subnet index intervals [first,last] inside each free segment.
