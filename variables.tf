@@ -7,7 +7,7 @@ variable "base_network_cidr" {
       length(var.base_network_cidr) > 0 &&
       can(regex("^([0-9]{1,3}\\.){3}[0-9]{1,3}/[0-9]{1,2}$", var.base_network_cidr)) &&
       can(cidrnetmask(var.base_network_cidr)) &&
-      var.base_network_cidr == format("%s/%d", cidrhost(var.base_network_cidr, 0), tonumber(split("/", var.base_network_cidr)[1]))
+      try(var.base_network_cidr == format("%s/%d", cidrhost(var.base_network_cidr, 0), tonumber(split("/", var.base_network_cidr)[1])), false)
     )
     error_message = "The 'base_network_cidr' variable must be a non-empty canonical IPv4 CIDR string (for example: 10.0.0.0/16). IPv6 is not supported. Leading or trailing whitespace is not allowed."
   }
@@ -46,7 +46,7 @@ variable "reservations" {
       length(reservation_name) > 0 &&
       can(regex("^([0-9]{1,3}\\.){3}[0-9]{1,3}/[0-9]{1,2}$", reservation_cidr)) &&
       can(cidrnetmask(reservation_cidr)) &&
-      reservation_cidr == format("%s/%d", cidrhost(reservation_cidr, 0), tonumber(split("/", reservation_cidr)[1]))
+      try(reservation_cidr == format("%s/%d", cidrhost(reservation_cidr, 0), tonumber(split("/", reservation_cidr)[1])), false)
     ])
     error_message = "Each reservations entry must have a non-empty key and a valid canonical IPv4 CIDR value (host bits must be zero, e.g. 10.0.0.0/24 not 10.0.0.1/24). IPv6 is not supported."
   }
