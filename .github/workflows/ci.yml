@@ -10,8 +10,8 @@ permissions:
   contents: read
 
 jobs:
-  validate:
-    name: Validate
+  lint:
+    name: Lint
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -23,16 +23,10 @@ jobs:
       - name: Terraform Format Check
         run: terraform fmt -check -recursive
 
-      - name: Terraform Init
-        run: terraform init
-
-      - name: Terraform Validate
-        run: terraform validate
-
   test:
     name: Test
     runs-on: ubuntu-latest
-    needs: validate
+    needs: lint
     steps:
       - uses: actions/checkout@v4
 
@@ -40,8 +34,5 @@ jobs:
         with:
           terraform_version: "~> 1.8"
 
-      - name: Terraform Init
-        run: terraform init
-
       - name: Terraform Test
-        run: terraform test
+        run: ./test.sh

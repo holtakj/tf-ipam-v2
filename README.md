@@ -21,7 +21,21 @@ This module supports **IPv4 only**.
 | Name | Version |
 | --- | --- |
 | Terraform | `>= 1.8.0` |
-| Provider `The-DevOps-Daily/validatefx` | `>= 0.11.2` |
+
+### Runtime Provider Dependency
+
+This module uses the [`The-DevOps-Daily/validatefx`](https://registry.terraform.io/providers/The-DevOps-Daily/validatefx) provider (`>= 0.11.2`) for CIDR overlap validation via `provider::validatefx::cidr_overlap`. The provider is **not** declared in the module's `required_providers` to preserve flexibility for consuming root configurations. The root configuration must declare it:
+
+```hcl
+terraform {
+  required_providers {
+    validatefx = {
+      source  = "registry.terraform.io/The-DevOps-Daily/validatefx"
+      version = ">= 0.11.2"
+    }
+  }
+}
+```
 
 ## Inputs
 
@@ -62,6 +76,20 @@ The module enforces:
 6. Materialize first valid index as the `next_free` suggestion.
 
 This produces deterministic results with predictable complexity even for large spans.
+
+## Testing
+
+Tests require the `validatefx` provider. The `test.sh` wrapper script temporarily injects the provider declaration, runs `terraform init` and `terraform test`, then cleans up:
+
+```bash
+./test.sh
+```
+
+Any arguments are forwarded to `terraform test`:
+
+```bash
+./test.sh -filter=base_10_0_0_0_16.tftest.hcl
+```
 
 ## Usage
 
