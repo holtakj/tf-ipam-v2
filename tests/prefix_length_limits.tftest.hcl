@@ -116,7 +116,7 @@ run "min_max_at_1_broadest_network_fails_variable_validation" {
 # ── Failing: check block violations ──────────────────────────────────────────
 
 # base_network_cidr prefix (7) is lower than min_prefix_length (8).
-run "base_network_cidr_broader_than_min_prefix_length_fails" {
+run "base_network_cidr_broader_than_min_prefix_length_passes" {
   command = plan
 
   variables {
@@ -125,9 +125,10 @@ run "base_network_cidr_broader_than_min_prefix_length_fails" {
     max_prefix_length = 8
   }
 
-  expect_failures = [
-    output.subnet_count_by_cidr_size,
-  ]
+  assert {
+    condition     = output.subnet_count_by_cidr_size["/8"] == 2
+    error_message = "A /7 base should contain 2 /8 subnets."
+  }
 }
 
 # max_prefix_length (23) < min_prefix_length (24) → inverted range.

@@ -9,11 +9,9 @@ locals {
   reserved_cidrs_non_overlapping = can(provider::validatefx::cidr_overlap(local.reserved_cidrs))
 
 
-  # Parse the base prefix once and gate all derived computations behind it.
-  # If the base is broader than min_prefix_length, we intentionally suppress downstream
-  # calculations and rely on checks to surface the configuration error.
+  # Parse the base prefix once.
   base_prefix_length  = tonumber(split("/", var.base_network_cidr)[1])
-  computation_enabled = local.base_prefix_length >= var.min_prefix_length
+  computation_enabled = local.base_prefix_length <= var.max_prefix_length
 
   # Convert the base CIDR boundaries to integers so we can do interval math.
   # Formula: a.b.c.d => a*256^3 + b*256^2 + c*256 + d.

@@ -8,11 +8,6 @@ output "subnet_count_by_cidr_size" {
   }
 
   precondition {
-    condition     = local.base_prefix_length >= var.min_prefix_length
-    error_message = format("base_network_cidr /%d is broader than min_prefix_length /%d. Provide a narrower base_network_cidr or lower min_prefix_length.", local.base_prefix_length, var.min_prefix_length)
-  }
-
-  precondition {
     condition     = local.base_prefix_length <= var.max_prefix_length
     error_message = format("base_network_cidr /%d is narrower than max_prefix_length /%d. Provide a broader base_network_cidr or raise max_prefix_length.", local.base_prefix_length, var.max_prefix_length)
   }
