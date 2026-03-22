@@ -1,26 +1,26 @@
-output "subnet_count_by_cidr_size" {
-  description = "Map of CIDR sizes to the number of subnets that can be carved from base_network_cidr (keys: /<min_prefix_length> through /<max_prefix_length>)."
-  value       = local.subnet_count_by_cidr_size
+output "subnet_count" {
+  description = "Map of CIDR sizes to the number of subnets that can be carved from base_cidr (keys: /<min_prefix> through /<max_prefix>)."
+  value       = local.subnet_count
 
   precondition {
-    condition     = var.max_prefix_length >= var.min_prefix_length
-    error_message = format("max_prefix_length /%d must be greater than or equal to min_prefix_length /%d.", var.max_prefix_length, var.min_prefix_length)
+    condition     = var.max_prefix >= var.min_prefix
+    error_message = format("max_prefix /%d must be greater than or equal to min_prefix /%d.", var.max_prefix, var.min_prefix)
   }
 
   precondition {
-    condition     = local.base_prefix_length <= var.max_prefix_length
-    error_message = format("base_network_cidr /%d is narrower than max_prefix_length /%d. Provide a broader base_network_cidr or raise max_prefix_length.", local.base_prefix_length, var.max_prefix_length)
+    condition     = local.base_prefix_length <= var.max_prefix
+    error_message = format("base_cidr /%d is narrower than max_prefix /%d. Provide a broader base_cidr or raise max_prefix.", local.base_prefix_length, var.max_prefix)
   }
 }
 
-output "free_cidr_suggestions" {
-  description = "Per-size next free suggestions keyed from /<min_prefix_length> to /<max_prefix_length>. Value is a list (possibly empty) of up to free_cidr_suggestion_count objects with fields: cidr_base, size, cidr, reservable_subnet_count, alignment_skipped_ip_count."
+output "next_free" {
+  description = "Per-size next free suggestions keyed from /<min_prefix> to /<max_prefix>. Value is a list (possibly empty) of up to suggest_count objects with fields: cidr_base, size, cidr, reservable_subnet_count, alignment_skipped_ip_count."
   value       = local.next_free_cidr_suggestions_by_size
 }
 
 output "reserved" {
   description = "Map of all reservation names to CIDRs."
-  value       = var.reservations
+  value       = var.reserved
 
   precondition {
     condition     = local.reserved_cidrs_unique
@@ -29,7 +29,7 @@ output "reserved" {
 
   precondition {
     condition     = local.reserved_cidrs_exist
-    error_message = "Every reservation CIDR must be canonical, aligned to the base network, within the base range, and within [min_prefix_length, max_prefix_length]."
+    error_message = "Every reservation CIDR must be canonical, aligned to the base network, within the base range, and within [min_prefix, max_prefix]."
   }
 
   precondition {

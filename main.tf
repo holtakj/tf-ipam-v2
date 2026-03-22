@@ -1,6 +1,6 @@
 locals {
 
-  reserved_cidrs = values(var.reservations)
+  reserved_cidrs = values(var.reserved)
 
   # Reservation names are metadata only; uniqueness is enforced on CIDR values.
   reserved_cidrs_unique = length(distinct(local.reserved_cidrs)) == length(local.reserved_cidrs)
@@ -10,16 +10,16 @@ locals {
 
 
   # Parse the base prefix once.
-  base_prefix_length  = tonumber(split("/", var.base_network_cidr)[1])
-  computation_enabled = local.base_prefix_length <= var.max_prefix_length
+  base_prefix_length  = tonumber(split("/", var.base_cidr)[1])
+  computation_enabled = local.base_prefix_length <= var.max_prefix
 
   # Convert the base CIDR boundaries to integers so we can do interval math.
   # Formula: a.b.c.d => a*256^3 + b*256^2 + c*256 + d.
   base_start_int = (
-    tonumber(split(".", cidrhost(var.base_network_cidr, 0))[0]) * 16777216 +
-    tonumber(split(".", cidrhost(var.base_network_cidr, 0))[1]) * 65536 +
-    tonumber(split(".", cidrhost(var.base_network_cidr, 0))[2]) * 256 +
-    tonumber(split(".", cidrhost(var.base_network_cidr, 0))[3])
+    tonumber(split(".", cidrhost(var.base_cidr, 0))[0]) * 16777216 +
+    tonumber(split(".", cidrhost(var.base_cidr, 0))[1]) * 65536 +
+    tonumber(split(".", cidrhost(var.base_cidr, 0))[2]) * 256 +
+    tonumber(split(".", cidrhost(var.base_cidr, 0))[3])
   )
 
   # The base range is inclusive, so subtract 1 from subnet size to get the ending address.
@@ -27,11 +27,11 @@ locals {
   base_end_int = local.base_start_int + pow(2, 32 - local.base_prefix_length) - 1
 
   # Reuse a single scoped size list so downstream maps only materialize returned CIDR sizes.
-  scoped_cidr_sizes = range(var.min_prefix_length, var.max_prefix_length + 1)
+  scoped_cidr_sizes = range(var.min_prefix, var.max_prefix + 1)
 
   # Taxative count map for each requested size inside the base CIDR window.
-  # For sizes outside [base_prefix_length, max_prefix_length], count is forced to 0.
-  subnet_count_by_cidr_size = {
+  # For sizes outside [base_prefix_length, max_prefix], count is forced to 0.
+  subnet_count = {
     for cidr_size in local.scoped_cidr_sizes :
     format("/%d", cidr_size) => (
       cidr_size < local.base_prefix_length ? 0 : pow(2, cidr_size - local.base_prefix_length)
@@ -66,13 +66,13 @@ locals {
 
   # Validate each reservation is canonical, aligned, in-range, and enabled by current prefix bounds.
   # Alignment rule: (reservation_start - base_start) mod reservation_size == 0.
-  # This guarantees the reservation is on a valid subnet boundary relative to base_network_cidr.
+  # This guarantees the reservation is on a valid subnet boundary relative to base_cidr.
   reserved_cidrs_exist = alltrue([
     for reserved_range in local.reserved_ranges : (
       local.computation_enabled &&
       reserved_range.cidr == reserved_range.canonical_cidr &&
-      reserved_range.prefix_length >= var.min_prefix_length &&
-      reserved_range.prefix_length <= var.max_prefix_length &&
+      reserved_range.prefix_length >= var.min_prefix &&
+      reserved_range.prefix_length <= var.max_prefix &&
       reserved_range.prefix_length >= local.base_prefix_length &&
       reserved_range.start_int >= local.base_start_int &&
       reserved_range.end_int <= local.base_end_int &&
@@ -83,7 +83,7 @@ locals {
 
 
   # Intersect reservation ranges with the base range so later logic only sees relevant blockers.
-  # Although checks already constrain reservations, intersection keeps this stage defensive and local.
+  # Although checks already constrain reserved, intersection keeps this stage defensive and local.
   blocking_reserved_ranges = [
     for reserved_range in local.reserved_ranges : {
       start_int = max(local.base_start_int, reserved_range.start_int)
@@ -172,12 +172,12 @@ locals {
   }
 
   # Build candidate indices per CIDR size from each free interval.
-  # We keep at most free_cidr_suggestion_count indices per interval, then slice globally per size.
+  # We keep at most suggest_count indices per interval, then slice globally per size.
   candidate_free_subnet_indices_by_size = {
     for cidr_size in local.scoped_cidr_sizes : cidr_size => (
       !local.computation_enabled || cidr_size < local.base_prefix_length ? [] : flatten([
         for free_range in local.free_subnet_index_ranges_by_size[cidr_size] : [
-          for offset in range(min(var.free_cidr_suggestion_count, free_range.last - free_range.first + 1)) :
+          for offset in range(min(var.suggest_count, free_range.last - free_range.first + 1)) :
           free_range.first + offset
         ]
       ])
@@ -189,13 +189,13 @@ locals {
       slice(
         local.candidate_free_subnet_indices_by_size[cidr_size],
         0,
-        min(var.free_cidr_suggestion_count, length(local.candidate_free_subnet_indices_by_size[cidr_size]))
+        min(var.suggest_count, length(local.candidate_free_subnet_indices_by_size[cidr_size]))
       )
     )
   }
 
-  # Emit next-free suggestions for sizes within scope (min_prefix_length.. max_prefix_length).
-  # For each size key, return up to free_cidr_suggestion_count allocatable aligned subnets.
+  # Emit next-free suggestions for sizes within scope (min_prefix.. max_prefix).
+  # For each size key, return up to suggest_count allocatable aligned subnets.
   # For every suggestion we emit:
   # - cidr_base/cidr: allocatable aligned subnet
   # - reservable_subnet_count: total allocatable aligned subnets of that size
@@ -204,9 +204,9 @@ locals {
     for cidr_size in local.scoped_cidr_sizes :
     format("/%d", cidr_size) => [
       for subnet_index in local.selected_free_subnet_indices_by_size[cidr_size] : {
-        cidr_base               = split("/", cidrsubnet(var.base_network_cidr, cidr_size - local.base_prefix_length, subnet_index))[0]
+        cidr_base               = split("/", cidrsubnet(var.base_cidr, cidr_size - local.base_prefix_length, subnet_index))[0]
         size                    = cidr_size
-        cidr                    = cidrsubnet(var.base_network_cidr, cidr_size - local.base_prefix_length, subnet_index)
+        cidr                    = cidrsubnet(var.base_cidr, cidr_size - local.base_prefix_length, subnet_index)
         reservable_subnet_count = local.reservable_subnet_count_by_size[cidr_size]
         alignment_skipped_ip_count = sum([
           for free_segment in local.free_ip_segments : max(

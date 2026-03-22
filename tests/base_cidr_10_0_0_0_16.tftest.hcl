@@ -2,13 +2,13 @@ run "subnet_count_map_for_10_0_0_0_16" {
   command = plan
 
   variables {
-    base_network_cidr = "10.0.0.0/16"
-    min_prefix_length = 14
-    max_prefix_length = 26
+    base_cidr = "10.0.0.0/16"
+    min_prefix = 14
+    max_prefix = 26
   }
 
   assert {
-    condition = jsonencode(output.subnet_count_by_cidr_size) == jsonencode({
+    condition = jsonencode(output.subnet_count) == jsonencode({
       "/14" = 0
       "/15" = 0
       "/16" = 1
@@ -23,11 +23,11 @@ run "subnet_count_map_for_10_0_0_0_16" {
       "/25" = 512
       "/26" = 1024
     })
-    error_message = "subnet_count_by_cidr_size should compute /14.../26 respecting bounds, with counts for sizes within /16.../26."
+    error_message = "subnet_count should compute /14.../26 respecting bounds, with counts for sizes within /16.../26."
   }
 
   assert {
-    condition = jsonencode(output.free_cidr_suggestions) == jsonencode({
+    condition = jsonencode(output.next_free) == jsonencode({
       for cidr_key, suggestion in merge(
         { for cidr_size in range(14, 27) : format("/%d", cidr_size) => null },
         {
@@ -111,7 +111,7 @@ run "subnet_count_map_for_10_0_0_0_16" {
         }
       ) : cidr_key => (suggestion == null ? [] : [suggestion])
     })
-    error_message = "free_cidr_suggestions should match expected first-free values and counts for /14.../26."
+    error_message = "next_free should match expected first-free values and counts for /14.../26."
   }
 }
 
@@ -119,9 +119,9 @@ run "reserved_cidrs_must_not_overlap_check_fails_on_overlap" {
   command = plan
 
   variables {
-    base_network_cidr = "10.0.0.0/16"
+    base_cidr = "10.0.0.0/16"
 
-    reservations = {
+    reserved = {
       overlap_1 = "10.0.1.0/24"
       overlap_2 = "10.0.1.128/25"
     }
@@ -136,9 +136,9 @@ run "reserved_cidrs_must_be_unique_even_when_names_differ" {
   command = plan
 
   variables {
-    base_network_cidr = "10.0.0.0/16"
+    base_cidr = "10.0.0.0/16"
 
-    reservations = {
+    reserved = {
       a = "10.0.10.0/24"
       b = "10.0.10.0/24"
     }

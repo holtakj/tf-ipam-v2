@@ -2,13 +2,13 @@ run "alignment_skipped_ip_count_is_zero_without_reservations" {
   command = plan
 
   variables {
-    base_network_cidr = "10.0.0.0/30"
-    min_prefix_length = 30
-    max_prefix_length = 32
+    base_cidr = "10.0.0.0/30"
+    min_prefix = 30
+    max_prefix = 32
   }
 
   assert {
-    condition = jsonencode(output.free_cidr_suggestions) == jsonencode({
+    condition = jsonencode(output.next_free) == jsonencode({
       for cidr_key, suggestion in merge(
         { for cidr_size in range(30, 33) : format("/%d", cidr_size) => null },
         {
@@ -36,7 +36,7 @@ run "alignment_skipped_ip_count_is_zero_without_reservations" {
         }
       ) : cidr_key => (suggestion == null ? [] : [suggestion])
     })
-    error_message = "Without reservations, alignment_skipped_ip_count must be 0 for every suggested size."
+    error_message = "Without reserved, alignment_skipped_ip_count must be 0 for every suggested size."
   }
 }
 
@@ -44,18 +44,18 @@ run "alignment_skipped_ip_count_counts_only_free_ips_before_first_aligned_subnet
   command = plan
 
   variables {
-    base_network_cidr = "10.0.0.0/29"
-    min_prefix_length = 29
-    max_prefix_length = 32
+    base_cidr = "10.0.0.0/29"
+    min_prefix = 29
+    max_prefix = 32
 
-    reservations = {
+    reserved = {
       first_ip = "10.0.0.0/32"
       third_ip = "10.0.0.2/32"
     }
   }
 
   assert {
-    condition = jsonencode(output.free_cidr_suggestions) == jsonencode({
+    condition = jsonencode(output.next_free) == jsonencode({
       for cidr_key, suggestion in merge(
         { for cidr_size in range(29, 33) : format("/%d", cidr_size) => null },
         {
@@ -91,13 +91,13 @@ run "alignment_skipped_ip_count_large_16_base_network" {
   command = plan
 
   variables {
-    base_network_cidr = "10.0.0.0/16"
-    min_prefix_length = 16
-    max_prefix_length = 28
+    base_cidr = "10.0.0.0/16"
+    min_prefix = 16
+    max_prefix = 28
   }
 
   assert {
-    condition = jsonencode(output.free_cidr_suggestions) == jsonencode({
+    condition = jsonencode(output.next_free) == jsonencode({
       for cidr_key, suggestion in merge(
         { for cidr_size in range(16, 29) : format("/%d", cidr_size) => null },
         {
@@ -203,17 +203,17 @@ run "alignment_skipped_ip_count_is_computed_when_32_is_out_of_scope" {
   command = plan
 
   variables {
-    base_network_cidr = "10.0.0.0/29"
-    min_prefix_length = 29
-    max_prefix_length = 31
+    base_cidr = "10.0.0.0/29"
+    min_prefix = 29
+    max_prefix = 31
 
-    reservations = {
+    reserved = {
       reserved_head = "10.0.0.0/31"
     }
   }
 
   assert {
-    condition = jsonencode(output.free_cidr_suggestions) == jsonencode({
+    condition = jsonencode(output.next_free) == jsonencode({
       for cidr_key, suggestion in merge(
         { for cidr_size in range(29, 32) : format("/%d", cidr_size) => null },
         {
@@ -234,6 +234,6 @@ run "alignment_skipped_ip_count_is_computed_when_32_is_out_of_scope" {
         }
       ) : cidr_key => (suggestion == null ? [] : [suggestion])
     })
-    error_message = "alignment_skipped_ip_count must still be computed from free-space overlap even when /32 is outside max_prefix_length."
+    error_message = "alignment_skipped_ip_count must still be computed from free-space overlap even when /32 is outside max_prefix."
   }
 }

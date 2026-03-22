@@ -41,35 +41,35 @@ terraform {
 
 | Name | Type | Default | Description |
 | --- | --- | --- | --- |
-| `base_network_cidr` | `string` | n/a | Base IPv4 CIDR block for IPAM allocations (for example `10.0.0.0/16`). |
-| `min_prefix_length` | `number` | `8` | Broadest/largest prefix included in computation/reservations (`8..32`). |
-| `max_prefix_length` | `number` | `32` | Narrowest/smallest prefix included in computation/reservations (`8..32`). |
-| `reservations` | `map(string)` | `{}` | Map of reservation name to canonical CIDR. Names are stable keys; CIDRs must be canonical, valid, and non-overlapping. |
-| `free_cidr_suggestion_count` | `number` | `1` | Number of next-free CIDR suggestions to return per size key (`1..1024`). |
+| `base_cidr` | `string` | n/a | Base IPv4 CIDR block for IPAM allocations (for example `10.0.0.0/16`). |
+| `min_prefix` | `number` | `8` | Broadest/largest prefix included in computation and reserved CIDRs (`8..32`). |
+| `max_prefix` | `number` | `32` | Narrowest/smallest prefix included in computation and reserved CIDRs (`8..32`). |
+| `reserved` | `map(string)` | `{}` | Map of reservation name to canonical CIDR. Names are stable keys; CIDRs must be canonical, valid, and non-overlapping. |
+| `suggest_count` | `number` | `1` | Number of next-free CIDR suggestions to return per size key (`1..1024`). |
 
 ## Outputs
 
 | Name | Type | Description |
 | --- | --- | --- |
-| `subnet_count_by_cidr_size` | `map(number)` | Number of subnets that can be carved from `base_network_cidr` for each CIDR size key (`"/<min_prefix_length>"..."/<max_prefix_length>"`). |
-| `free_cidr_suggestions` | `map(list(object))` | For each size key (`"/<min_prefix_length>"..."/<max_prefix_length>"`), a list (possibly empty) of up to `free_cidr_suggestion_count` objects `{ cidr_base, size, cidr, reservable_subnet_count, alignment_skipped_ip_count }`. |
-| `reserved` | `map(string)` | Echo of reservations (name -> CIDR). |
+| `subnet_count` | `map(number)` | Number of subnets that can be carved from `base_cidr` for each CIDR size key (`"/<min_prefix>"..."/<max_prefix>"`). |
+| `next_free` | `map(list(object))` | For each size key (`"/<min_prefix>"..."/<max_prefix>"`), a list (possibly empty) of up to `suggest_count` objects `{ cidr_base, size, cidr, reservable_subnet_count, alignment_skipped_ip_count }`. |
+| `reserved` | `map(string)` | Echo of reserved CIDRs (name -> CIDR). |
 
 ## Validation Rules
 
 The module enforces:
 
-- `max_prefix_length >= min_prefix_length`
-- `base_network_cidr` is canonical (host bits zeroed, for example `10.0.0.0/24`)
-- `base_network_cidr` prefix is not broader than `min_prefix_length`
-- `base_network_cidr` prefix is not narrower than `max_prefix_length`
+- `max_prefix >= min_prefix`
+- `base_cidr` is canonical (host bits zeroed, for example `10.0.0.0/24`)
+- `base_cidr` prefix is not broader than `min_prefix`
+- `base_cidr` prefix is not narrower than `max_prefix`
 - reservation CIDR values are unique
 - reservation CIDRs are canonical/aligned/in range for current bounds
 - reservation CIDRs do not overlap (`validatefx::cidr_overlap`)
 
 ## Algorithm Overview
 
-1. Convert `base_network_cidr` and reservation CIDRs into integer ranges.
+1. Convert `base_cidr` and reservation CIDRs into integer ranges.
 2. Sort and intersect reservation ranges against the base range.
 3. Derive contiguous free IP segments between reserved ranges.
 4. For each CIDR size, convert free segments into valid aligned subnet index intervals.
@@ -89,7 +89,7 @@ Tests require the `validatefx` provider. The `test.sh` wrapper script temporaril
 Any arguments are forwarded to `terraform test`:
 
 ```bash
-./test.sh -filter=base_10_0_0_0_16.tftest.hcl
+./test.sh -filter=base_cidr_10_0_0_0_16.tftest.hcl
 ```
 
 ## Usage
@@ -98,11 +98,11 @@ Any arguments are forwarded to `terraform test`:
 module "ipam" {
   source = "./terraform/modules/tf-ipam-v2"
 
-  base_network_cidr = "10.0.0.0/16"
-  min_prefix_length = 16
-  max_prefix_length = 26
+  base_cidr = "10.0.0.0/16"
+  min_prefix = 16
+  max_prefix = 26
 
-  reservations = {
+  reserved = {
     dmz = "10.0.8.0/24"
     db  = "10.0.16.0/20"
   }
@@ -113,7 +113,7 @@ module "ipam" {
 
 ```hcl
 output "next_free_24" {
-  value = try(module.ipam.free_cidr_suggestions["/24"][0], null)
+  value = try(module.ipam.next_free["/24"][0], null)
 }
 ```
 

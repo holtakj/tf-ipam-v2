@@ -2,13 +2,13 @@ run "next_free_suggestions_without_reservations" {
   command = plan
 
   variables {
-    base_network_cidr = "10.0.0.0/30"
-    min_prefix_length = 30
-    max_prefix_length = 32
+    base_cidr = "10.0.0.0/30"
+    min_prefix = 30
+    max_prefix = 32
   }
 
   assert {
-    condition = jsonencode(output.free_cidr_suggestions) == jsonencode({
+    condition = jsonencode(output.next_free) == jsonencode({
       for cidr_key, suggestion in merge(
         { for cidr_size in range(30, 33) : format("/%d", cidr_size) => null },
         {
@@ -36,7 +36,7 @@ run "next_free_suggestions_without_reservations" {
         }
       ) : cidr_key => (suggestion == null ? [] : [suggestion])
     })
-    error_message = "Without reservations, each next-free suggestion must point at the first subnet of that size inside the base CIDR."
+    error_message = "Without reserved, each next-free suggestion must point at the first subnet of that size inside the base CIDR."
   }
 }
 
@@ -44,18 +44,18 @@ run "next_free_suggestions_skip_reserved_head_subnets" {
   command = plan
 
   variables {
-    base_network_cidr = "10.0.0.0/29"
-    min_prefix_length = 29
-    max_prefix_length = 32
+    base_cidr = "10.0.0.0/29"
+    min_prefix = 29
+    max_prefix = 32
 
-    reservations = {
+    reserved = {
       first_half = "10.0.0.0/31"
       host_3     = "10.0.0.2/32"
     }
   }
 
   assert {
-    condition = jsonencode(output.free_cidr_suggestions) == jsonencode({
+    condition = jsonencode(output.next_free) == jsonencode({
       for cidr_key, suggestion in merge(
         { for cidr_size in range(29, 33) : format("/%d", cidr_size) => null },
         {
@@ -91,11 +91,11 @@ run "next_free_suggestions_fragmented_space_across_sizes" {
   command = plan
 
   variables {
-    base_network_cidr = "10.0.0.0/28"
-    min_prefix_length = 28
-    max_prefix_length = 32
+    base_cidr = "10.0.0.0/28"
+    min_prefix = 28
+    max_prefix = 32
 
-    reservations = {
+    reserved = {
       infra_a = "10.0.0.0/30"
       infra_b = "10.0.0.8/31"
       host_c  = "10.0.0.10/32"
@@ -103,7 +103,7 @@ run "next_free_suggestions_fragmented_space_across_sizes" {
   }
 
   assert {
-    condition = jsonencode(output.free_cidr_suggestions) == jsonencode({
+    condition = jsonencode(output.next_free) == jsonencode({
       for cidr_key, suggestion in merge(
         { for cidr_size in range(28, 33) : format("/%d", cidr_size) => null },
         {
@@ -131,7 +131,7 @@ run "next_free_suggestions_fragmented_space_across_sizes" {
         }
       ) : cidr_key => (suggestion == null ? [] : [suggestion])
     })
-    error_message = "Fragmented reservations must still yield the first free aligned subnet for each supported size."
+    error_message = "Fragmented reserved must still yield the first free aligned subnet for each supported size."
   }
 }
 
@@ -139,13 +139,13 @@ run "next_free_suggestions_hide_broader_sizes_than_base" {
   command = plan
 
   variables {
-    base_network_cidr = "10.0.0.0/24"
-    min_prefix_length = 22
-    max_prefix_length = 26
+    base_cidr = "10.0.0.0/24"
+    min_prefix = 22
+    max_prefix = 26
   }
 
   assert {
-    condition = jsonencode(output.free_cidr_suggestions) == jsonencode({
+    condition = jsonencode(output.next_free) == jsonencode({
       for cidr_key, suggestion in merge(
         { for cidr_size in range(22, 27) : format("/%d", cidr_size) => null },
         {
@@ -181,22 +181,22 @@ run "next_free_suggestions_do_not_create_gap_between_touching_reservations" {
   command = plan
 
   variables {
-    base_network_cidr = "10.0.0.0/30"
-    min_prefix_length = 30
-    max_prefix_length = 31
+    base_cidr = "10.0.0.0/30"
+    min_prefix = 30
+    max_prefix = 31
 
-    reservations = {
+    reserved = {
       lower_half = "10.0.0.0/31"
       upper_half = "10.0.0.2/31"
     }
   }
 
   assert {
-    condition = jsonencode(output.free_cidr_suggestions) == jsonencode({
+    condition = jsonencode(output.next_free) == jsonencode({
       "/30" = []
       "/31" = []
     })
-    error_message = "Touching non-overlapping reservations must not create a false free segment between adjacent blocks."
+    error_message = "Touching non-overlapping reserved must not create a false free segment between adjacent blocks."
   }
 }
 
@@ -204,14 +204,14 @@ run "next_free_suggestions_respect_configurable_count_per_size" {
   command = plan
 
   variables {
-    base_network_cidr           = "10.0.0.0/28"
-    min_prefix_length           = 30
-    max_prefix_length           = 32
-    free_cidr_suggestion_count  = 3
+    base_cidr           = "10.0.0.0/28"
+    min_prefix           = 30
+    max_prefix           = 32
+    suggest_count  = 3
   }
 
   assert {
-    condition = jsonencode(output.free_cidr_suggestions) == jsonencode({
+    condition = jsonencode(output.next_free) == jsonencode({
       "/30" = [
         {
           cidr_base                  = "10.0.0.0"
@@ -282,6 +282,6 @@ run "next_free_suggestions_respect_configurable_count_per_size" {
         }
       ]
     })
-    error_message = "free_cidr_suggestion_count must cap and order next-free suggestions per size deterministically."
+    error_message = "suggest_count must cap and order next-free suggestions per size deterministically."
   }
 }

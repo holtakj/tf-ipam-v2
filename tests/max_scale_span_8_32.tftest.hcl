@@ -2,16 +2,16 @@ run "maximum_supported_chunked_workload" {
   command = plan
 
   variables {
-    base_network_cidr = "10.0.0.0/8"
-    min_prefix_length = 8
-    max_prefix_length = 32
+    base_cidr = "10.0.0.0/8"
+    min_prefix = 8
+    max_prefix = 32
   }
 
   assert {
-    condition = jsonencode(output.subnet_count_by_cidr_size) == jsonencode({
+    condition = jsonencode(output.subnet_count) == jsonencode({
       for cidr_size in range(8, 33) :
       format("/%d", cidr_size) => pow(2, cidr_size - 8)
-      }) && jsonencode(output.free_cidr_suggestions) == jsonencode({
+      }) && jsonencode(output.next_free) == jsonencode({
       for cidr_key, suggestion in merge(
         { for cidr_size in range(8, 33) : format("/%d", cidr_size) => null },
         {
