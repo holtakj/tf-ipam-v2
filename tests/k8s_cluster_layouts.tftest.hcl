@@ -22,9 +22,9 @@ run "k8s_multi_cluster_randomized_layout_a" {
 
   assert {
     condition = (
-      output.next_free["/18"][0].cidr == "10.42.192.0/18" &&
-      output.next_free["/20"][0].cidr == "10.42.192.0/20" &&
-      output.next_free["/24"][0].cidr == "10.42.17.0/24"
+      output.next_free_cidrs["/18"][0].cidr == "10.42.192.0/18" &&
+      output.next_free_cidrs["/20"][0].cidr == "10.42.192.0/20" &&
+      output.next_free_cidrs["/24"][0].cidr == "10.42.17.0/24"
     )
     error_message = "The next free /18, /20, and /24 should point to the first aligned non-overlapping gaps in this randomized k8s layout."
   }
@@ -50,10 +50,10 @@ run "k8s_multi_cluster_randomized_layout_b" {
 
   assert {
     condition = (
-      output.next_free["/18"] == [] &&
-      output.next_free["/20"][0].cidr == "10.60.240.0/20" &&
-      output.next_free["/20"][0].reservable_subnet_count == 1 &&
-      output.next_free["/24"][0].cidr == "10.60.226.0/24"
+      output.next_free_cidrs["/18"] == [] &&
+      output.next_free_cidrs["/20"][0].cidr == "10.60.240.0/20" &&
+      output.next_free_cidrs["/20"][0].reservable_subnet_count == 1 &&
+      output.next_free_cidrs["/24"][0].cidr == "10.60.226.0/24"
     )
     error_message = "When pods consume most of the /16, /18 can be exhausted while /20 and /24 still have a deterministic next free slot."
   }
@@ -77,10 +77,10 @@ run "k8s_multi_cluster_randomized_layout_c" {
 
   assert {
     condition = (
-      output.next_free["/18"] == [] &&
-      output.next_free["/20"][0].cidr == "10.70.96.0/20" &&
-      output.next_free["/20"][0].reservable_subnet_count == 2 &&
-      output.next_free["/24"][0].cidr == "10.70.81.0/24"
+      output.next_free_cidrs["/18"] == [] &&
+      output.next_free_cidrs["/20"][0].cidr == "10.70.96.0/20" &&
+      output.next_free_cidrs["/20"][0].reservable_subnet_count == 2 &&
+      output.next_free_cidrs["/24"][0].cidr == "10.70.81.0/24"
     )
     error_message = "Randomized cluster block placement should preserve first-fit behavior for /20 and /24 while /18 remains exhausted."
   }

@@ -8,7 +8,7 @@ run "next_free_suggestions_without_reservations" {
   }
 
   assert {
-    condition = jsonencode(output.next_free) == jsonencode({
+    condition = jsonencode(output.next_free_cidrs) == jsonencode({
       for cidr_key, suggestion in merge(
         { for cidr_size in range(30, 33) : format("/%d", cidr_size) => null },
         {
@@ -38,6 +38,33 @@ run "next_free_suggestions_without_reservations" {
     })
     error_message = "Without reserved, each next-free suggestion must point at the first subnet of that size inside the base CIDR."
   }
+
+  assert {
+    condition = jsonencode(output.next_free_cidr) == jsonencode({
+      "/30" = {
+        cidr_base                  = "10.0.0.0"
+        size                       = 30
+        cidr                       = "10.0.0.0/30"
+        reservable_subnet_count    = 1
+        alignment_skipped_ip_count = 0
+      }
+      "/31" = {
+        cidr_base                  = "10.0.0.0"
+        size                       = 31
+        cidr                       = "10.0.0.0/31"
+        reservable_subnet_count    = 2
+        alignment_skipped_ip_count = 0
+      }
+      "/32" = {
+        cidr_base                  = "10.0.0.0"
+        size                       = 32
+        cidr                       = "10.0.0.0/32"
+        reservable_subnet_count    = 4
+        alignment_skipped_ip_count = 0
+      }
+    })
+    error_message = "next_free must expose only the first suggestion per subnet size."
+  }
 }
 
 run "next_free_suggestions_skip_reserved_head_subnets" {
@@ -55,7 +82,7 @@ run "next_free_suggestions_skip_reserved_head_subnets" {
   }
 
   assert {
-    condition = jsonencode(output.next_free) == jsonencode({
+    condition = jsonencode(output.next_free_cidrs) == jsonencode({
       for cidr_key, suggestion in merge(
         { for cidr_size in range(29, 33) : format("/%d", cidr_size) => null },
         {
@@ -103,7 +130,7 @@ run "next_free_suggestions_fragmented_space_across_sizes" {
   }
 
   assert {
-    condition = jsonencode(output.next_free) == jsonencode({
+    condition = jsonencode(output.next_free_cidrs) == jsonencode({
       for cidr_key, suggestion in merge(
         { for cidr_size in range(28, 33) : format("/%d", cidr_size) => null },
         {
@@ -145,7 +172,7 @@ run "next_free_suggestions_hide_broader_sizes_than_base" {
   }
 
   assert {
-    condition = jsonencode(output.next_free) == jsonencode({
+    condition = jsonencode(output.next_free_cidrs) == jsonencode({
       for cidr_key, suggestion in merge(
         { for cidr_size in range(22, 27) : format("/%d", cidr_size) => null },
         {
@@ -192,7 +219,7 @@ run "next_free_suggestions_do_not_create_gap_between_touching_reservations" {
   }
 
   assert {
-    condition = jsonencode(output.next_free) == jsonencode({
+    condition = jsonencode(output.next_free_cidrs) == jsonencode({
       "/30" = []
       "/31" = []
     })
@@ -211,7 +238,7 @@ run "next_free_suggestions_respect_configurable_count_per_size" {
   }
 
   assert {
-    condition = jsonencode(output.next_free) == jsonencode({
+    condition = jsonencode(output.next_free_cidrs) == jsonencode({
       "/30" = [
         {
           cidr_base                  = "10.0.0.0"
@@ -283,5 +310,32 @@ run "next_free_suggestions_respect_configurable_count_per_size" {
       ]
     })
     error_message = "suggest_count must cap and order next-free suggestions per size deterministically."
+  }
+
+  assert {
+    condition = jsonencode(output.next_free_cidr) == jsonencode({
+      "/30" = {
+        cidr_base                  = "10.0.0.0"
+        size                       = 30
+        cidr                       = "10.0.0.0/30"
+        reservable_subnet_count    = 4
+        alignment_skipped_ip_count = 0
+      }
+      "/31" = {
+        cidr_base                  = "10.0.0.0"
+        size                       = 31
+        cidr                       = "10.0.0.0/31"
+        reservable_subnet_count    = 8
+        alignment_skipped_ip_count = 0
+      }
+      "/32" = {
+        cidr_base                  = "10.0.0.0"
+        size                       = 32
+        cidr                       = "10.0.0.0/32"
+        reservable_subnet_count    = 16
+        alignment_skipped_ip_count = 0
+      }
+    })
+    error_message = "next_free must remain first-only even when suggest_count returns multiple candidates in next_free_cidrs."
   }
 }

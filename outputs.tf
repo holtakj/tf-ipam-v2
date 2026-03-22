@@ -13,9 +13,14 @@ output "subnet_count" {
   }
 }
 
-output "next_free" {
+output "next_free_cidrs" {
   description = "Per-size next free suggestions keyed from /<min_prefix> to /<max_prefix>. Value is a list (possibly empty) of up to suggest_count objects with fields: cidr_base, size, cidr, reservable_subnet_count, alignment_skipped_ip_count."
   value       = local.next_free_cidr_suggestions_by_size
+}
+
+output "next_free_cidr" {
+  description = "Per-size first next free CIDR keyed from /<min_prefix> to /<max_prefix>. Value is null when unavailable; otherwise an object with fields: cidr_base, size, cidr, reservable_subnet_count, alignment_skipped_ip_count."
+  value       = local.next_free_cidr_suggestion_by_size
 }
 
 output "reserved" {

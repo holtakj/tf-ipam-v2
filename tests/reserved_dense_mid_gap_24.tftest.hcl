@@ -17,13 +17,13 @@ run "base_10_0_0_0_16_with_single_mid_24_gap_suggests_that_24" {
 
   assert {
     condition = (
-      length(output.next_free["/24"]) > 0 &&
-      output.next_free["/24"][0].cidr == "10.0.128.0/24" &&
-      output.next_free["/24"][0].reservable_subnet_count == 1 &&
-      output.next_free["/24"][0].alignment_skipped_ip_count == 0 &&
-      output.next_free["/23"] == [] &&
-      output.next_free["/26"][0].cidr == "10.0.128.0/26" &&
-      output.next_free["/26"][0].reservable_subnet_count == 4
+      length(output.next_free_cidrs["/24"]) > 0 &&
+      output.next_free_cidrs["/24"][0].cidr == "10.0.128.0/24" &&
+      output.next_free_cidrs["/24"][0].reservable_subnet_count == 1 &&
+      output.next_free_cidrs["/24"][0].alignment_skipped_ip_count == 0 &&
+      output.next_free_cidrs["/23"] == [] &&
+      output.next_free_cidrs["/26"][0].cidr == "10.0.128.0/26" &&
+      output.next_free_cidrs["/26"][0].reservable_subnet_count == 4
     )
     error_message = "With one mid /24 gap in an otherwise fully reserved /16, the module must suggest that exact /24 as next free and report exactly one reservable /24."
   }

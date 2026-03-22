@@ -11,7 +11,7 @@ run "maximum_supported_chunked_workload" {
     condition = jsonencode(output.subnet_count) == jsonencode({
       for cidr_size in range(8, 33) :
       format("/%d", cidr_size) => pow(2, cidr_size - 8)
-      }) && jsonencode(output.next_free) == jsonencode({
+      }) && jsonencode(output.next_free_cidrs) == jsonencode({
       for cidr_key, suggestion in merge(
         { for cidr_size in range(8, 33) : format("/%d", cidr_size) => null },
         {

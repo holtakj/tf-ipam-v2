@@ -8,7 +8,7 @@ run "alignment_skipped_ip_count_is_zero_without_reservations" {
   }
 
   assert {
-    condition = jsonencode(output.next_free) == jsonencode({
+    condition = jsonencode(output.next_free_cidrs) == jsonencode({
       for cidr_key, suggestion in merge(
         { for cidr_size in range(30, 33) : format("/%d", cidr_size) => null },
         {
@@ -55,7 +55,7 @@ run "alignment_skipped_ip_count_counts_only_free_ips_before_first_aligned_subnet
   }
 
   assert {
-    condition = jsonencode(output.next_free) == jsonencode({
+    condition = jsonencode(output.next_free_cidrs) == jsonencode({
       for cidr_key, suggestion in merge(
         { for cidr_size in range(29, 33) : format("/%d", cidr_size) => null },
         {
@@ -97,7 +97,7 @@ run "alignment_skipped_ip_count_large_16_base_network" {
   }
 
   assert {
-    condition = jsonencode(output.next_free) == jsonencode({
+    condition = jsonencode(output.next_free_cidrs) == jsonencode({
       for cidr_key, suggestion in merge(
         { for cidr_size in range(16, 29) : format("/%d", cidr_size) => null },
         {
@@ -213,7 +213,7 @@ run "alignment_skipped_ip_count_is_computed_when_32_is_out_of_scope" {
   }
 
   assert {
-    condition = jsonencode(output.next_free) == jsonencode({
+    condition = jsonencode(output.next_free_cidrs) == jsonencode({
       for cidr_key, suggestion in merge(
         { for cidr_size in range(29, 32) : format("/%d", cidr_size) => null },
         {

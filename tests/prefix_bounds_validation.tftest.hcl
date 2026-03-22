@@ -20,7 +20,7 @@ run "min_max_equal_base_prefix_computes_single_size" {
   }
 
   assert {
-    condition     = output.next_free["/24"][0].cidr == "10.0.0.0/24" && length(output.next_free) == 1
+    condition     = output.next_free_cidrs["/24"][0].cidr == "10.0.0.0/24" && length(output.next_free_cidrs) == 1
     error_message = "When min == max == base prefix, next_free must only contain /24 with the expected CIDR."
   }
 }
@@ -66,7 +66,7 @@ run "max_prefix_length_more_than_12_bits_above_min_now_passes" {
   }
 
   assert {
-    condition     = output.next_free["/32"][0].cidr == "10.0.0.0/32"
+    condition     = output.next_free_cidrs["/32"][0].cidr == "10.0.0.0/32"
     error_message = "For a 13-bit span, the first suggested /32 must be 10.0.0.0/32."
   }
 }
@@ -87,12 +87,12 @@ run "min_max_at_32_single_host_route" {
   }
 
   assert {
-    condition     = output.next_free["/32"][0].cidr == "10.0.0.0/32"
+    condition     = output.next_free_cidrs["/32"][0].cidr == "10.0.0.0/32"
     error_message = "A /32 base with min=max=32 must suggest 10.0.0.0/32."
   }
 
   assert {
-    condition     = length(output.next_free) == 1
+    condition     = length(output.next_free_cidrs) == 1
     error_message = "A /32 base with min=max=32 should only return /32 in next_free."
   }
 }

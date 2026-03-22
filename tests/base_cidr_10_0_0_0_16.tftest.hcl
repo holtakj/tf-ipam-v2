@@ -27,7 +27,7 @@ run "subnet_count_map_for_10_0_0_0_16" {
   }
 
   assert {
-    condition = jsonencode(output.next_free) == jsonencode({
+    condition = jsonencode(output.next_free_cidrs) == jsonencode({
       for cidr_key, suggestion in merge(
         { for cidr_size in range(14, 27) : format("/%d", cidr_size) => null },
         {

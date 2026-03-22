@@ -217,5 +217,11 @@ locals {
       }
     ]
   }
+
+  # Derived single-suggestion view: first suggestion per size or null when unavailable.
+  next_free_cidr_suggestion_by_size = {
+    for cidr_size, suggestions in local.next_free_cidr_suggestions_by_size :
+    cidr_size => try(suggestions[0], null)
+  }
 }
 

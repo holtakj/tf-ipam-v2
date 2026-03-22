@@ -52,7 +52,8 @@ terraform {
 | Name | Type | Description |
 | --- | --- | --- |
 | `subnet_count` | `map(number)` | Number of subnets that can be carved from `base_cidr` for each CIDR size key (`"/<min_prefix>"..."/<max_prefix>"`). |
-| `next_free` | `map(list(object))` | For each size key (`"/<min_prefix>"..."/<max_prefix>"`), a list (possibly empty) of up to `suggest_count` objects `{ cidr_base, size, cidr, reservable_subnet_count, alignment_skipped_ip_count }`. |
+| `next_free_cidrs` | `map(list(object))` | For each size key (`"/<min_prefix>"..."/<max_prefix>"`), a list (possibly empty) of up to `suggest_count` objects `{ cidr_base, size, cidr, reservable_subnet_count, alignment_skipped_ip_count }`. |
+| `next_free_cidr` | `map(object \| null)` | For each size key (`"/<min_prefix>"..."/<max_prefix>"`), the first next-free suggestion object or `null` when unavailable. |
 | `reserved` | `map(string)` | Echo of reserved CIDRs (name -> CIDR). |
 
 ## Validation Rules
@@ -74,7 +75,7 @@ The module enforces:
 3. Derive contiguous free IP segments between reserved ranges.
 4. For each CIDR size, convert free segments into valid aligned subnet index intervals.
 5. Aggregate interval lengths into `reservable_subnet_count`.
-6. Materialize first valid index as the `next_free` suggestion.
+6. Materialize first valid index as the `next_free_cidr` suggestion.
 
 This produces deterministic results with predictable complexity even for large spans.
 
@@ -113,7 +114,15 @@ module "ipam" {
 
 ```hcl
 output "next_free_24" {
-  value = try(module.ipam.next_free["/24"][0], null)
+  value = try(module.ipam.next_free_cidr["/24"], null)
+}
+```
+
+### Example: Read up to N next-free `/24` suggestions
+
+```hcl
+output "next_free_24_candidates" {
+  value = module.ipam.next_free_cidrs["/24"]
 }
 ```
 
