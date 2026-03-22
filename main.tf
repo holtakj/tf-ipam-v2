@@ -5,13 +5,41 @@ locals {
   # Reservation names are metadata only; uniqueness is enforced on CIDR values.
   reserved_cidrs_unique = length(distinct(local.reserved_cidrs)) == length(local.reserved_cidrs)
 
-  # validatefx::cidr_overlap throws on overlap; can(...) turns that into a boolean check result.
-  reserved_cidrs_non_overlapping = can(provider::validatefx::cidr_overlap(local.reserved_cidrs))
-
 
   # Parse the base prefix once.
   base_prefix_length  = tonumber(split("/", var.base_cidr)[1])
   computation_enabled = local.base_prefix_length <= var.max_prefix
+
+  subnet_enabled_ipv4_category_cidrs = flatten([
+    for category in values(local.ipv4_space_categories) :
+    category.subnets ? category.cidrs : []
+  ])
+
+  subnet_enabled_ipv4_category_ranges = [
+    for category_cidr in local.subnet_enabled_ipv4_category_cidrs : {
+      prefix_length = tonumber(split("/", category_cidr)[1])
+      start_int = (
+        tonumber(split(".", cidrhost(category_cidr, 0))[0]) * 16777216 +
+        tonumber(split(".", cidrhost(category_cidr, 0))[1]) * 65536 +
+        tonumber(split(".", cidrhost(category_cidr, 0))[2]) * 256 +
+        tonumber(split(".", cidrhost(category_cidr, 0))[3])
+      )
+      end_int = (
+        tonumber(split(".", cidrhost(category_cidr, 0))[0]) * 16777216 +
+        tonumber(split(".", cidrhost(category_cidr, 0))[1]) * 65536 +
+        tonumber(split(".", cidrhost(category_cidr, 0))[2]) * 256 +
+        tonumber(split(".", cidrhost(category_cidr, 0))[3]) +
+        pow(2, 32 - tonumber(split("/", category_cidr)[1])) -
+        1
+      )
+    }
+  ]
+
+  # A base CIDR can be processed only when it is fully contained in a subnets-enabled category range.
+  base_cidr_subnets_enabled = anytrue([
+    for subnet_enabled_range in local.subnet_enabled_ipv4_category_ranges :
+    local.base_start_int >= subnet_enabled_range.start_int && local.base_end_int <= subnet_enabled_range.end_int
+  ])
 
   # Convert the base CIDR boundaries to integers so we can do interval math.
   # Formula: a.b.c.d => a*256^3 + b*256^2 + c*256 + d.
@@ -63,6 +91,23 @@ locals {
       )
     }
   ]
+
+  # Overlap check in O(n log n): sort by start and verify every adjacent pair is disjoint.
+  sorted_reserved_range_indices = [
+    for sortable in sort([
+      for index, reserved_range in local.reserved_ranges :
+      format("%012.0f:%06d", reserved_range.start_int, index)
+    ]) : tonumber(split(":", sortable)[1])
+  ]
+
+  sorted_reserved_ranges = [
+    for index in local.sorted_reserved_range_indices : local.reserved_ranges[index]
+  ]
+
+  reserved_cidrs_non_overlapping = alltrue([
+    for index in range(length(local.sorted_reserved_ranges) > 0 ? length(local.sorted_reserved_ranges) - 1 : 0) :
+    local.sorted_reserved_ranges[index].end_int < local.sorted_reserved_ranges[index + 1].start_int
+  ])
 
   # Validate each reservation is canonical, aligned, in-range, and enabled by current prefix bounds.
   # Alignment rule: (reservation_start - base_start) mod reservation_size == 0.

@@ -5,7 +5,7 @@ run "k8s_multi_cluster_randomized_layout_a" {
   command = plan
 
   variables {
-    base_cidr = "10.42.0.0/16"
+    base_cidr  = "10.42.0.0/16"
     min_prefix = 16
     max_prefix = 24
 
@@ -34,7 +34,7 @@ run "k8s_multi_cluster_randomized_layout_b" {
   command = plan
 
   variables {
-    base_cidr = "10.60.0.0/16"
+    base_cidr  = "10.60.0.0/16"
     min_prefix = 16
     max_prefix = 24
 
@@ -63,7 +63,7 @@ run "k8s_multi_cluster_randomized_layout_c" {
   command = plan
 
   variables {
-    base_cidr = "10.70.0.0/16"
+    base_cidr  = "10.70.0.0/16"
     min_prefix = 16
     max_prefix = 24
 
@@ -90,7 +90,7 @@ run "k8s_randomized_overlap_between_cluster_ranges_fails" {
   command = plan
 
   variables {
-    base_cidr = "10.80.0.0/16"
+    base_cidr  = "10.80.0.0/16"
     min_prefix = 16
     max_prefix = 24
 
@@ -110,7 +110,7 @@ run "k8s_randomized_out_of_base_cluster_range_fails" {
   command = plan
 
   variables {
-    base_cidr = "10.90.0.0/16"
+    base_cidr  = "10.90.0.0/16"
     min_prefix = 16
     max_prefix = 24
 

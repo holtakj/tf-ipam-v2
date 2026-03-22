@@ -8,7 +8,7 @@ run "span_1_bits_supported" {
   command = plan
 
   variables {
-    base_cidr = "0.0.0.0/31"
+    base_cidr  = "10.0.0.0/31"
     min_prefix = 31
     max_prefix = 32
   }
@@ -26,7 +26,7 @@ run "span_2_bits_supported" {
   command = plan
 
   variables {
-    base_cidr = "0.0.0.0/30"
+    base_cidr  = "10.0.0.0/30"
     min_prefix = 30
     max_prefix = 32
   }
@@ -44,7 +44,7 @@ run "span_3_bits_supported" {
   command = plan
 
   variables {
-    base_cidr = "0.0.0.0/29"
+    base_cidr  = "10.0.0.0/29"
     min_prefix = 29
     max_prefix = 32
   }
@@ -62,7 +62,7 @@ run "span_4_bits_supported" {
   command = plan
 
   variables {
-    base_cidr = "0.0.0.0/28"
+    base_cidr  = "10.0.0.0/28"
     min_prefix = 28
     max_prefix = 32
   }
@@ -80,7 +80,7 @@ run "span_5_bits_supported" {
   command = plan
 
   variables {
-    base_cidr = "0.0.0.0/27"
+    base_cidr  = "10.0.0.0/27"
     min_prefix = 27
     max_prefix = 32
   }
@@ -98,7 +98,7 @@ run "span_6_bits_supported" {
   command = plan
 
   variables {
-    base_cidr = "0.0.0.0/26"
+    base_cidr  = "10.0.0.0/26"
     min_prefix = 26
     max_prefix = 32
   }
@@ -116,7 +116,7 @@ run "span_7_bits_supported" {
   command = plan
 
   variables {
-    base_cidr = "0.0.0.0/25"
+    base_cidr  = "10.0.0.0/25"
     min_prefix = 25
     max_prefix = 32
   }
@@ -134,7 +134,7 @@ run "span_8_bits_supported" {
   command = plan
 
   variables {
-    base_cidr = "0.0.0.0/24"
+    base_cidr  = "10.0.0.0/24"
     min_prefix = 24
     max_prefix = 32
   }
@@ -152,7 +152,7 @@ run "span_9_bits_supported" {
   command = plan
 
   variables {
-    base_cidr = "0.0.0.0/23"
+    base_cidr  = "10.0.0.0/23"
     min_prefix = 23
     max_prefix = 32
   }
@@ -170,7 +170,7 @@ run "span_10_bits_supported" {
   command = plan
 
   variables {
-    base_cidr = "0.0.0.0/22"
+    base_cidr  = "10.0.0.0/22"
     min_prefix = 22
     max_prefix = 32
   }
@@ -188,7 +188,7 @@ run "span_11_bits_supported" {
   command = plan
 
   variables {
-    base_cidr = "0.0.0.0/21"
+    base_cidr  = "10.0.0.0/21"
     min_prefix = 21
     max_prefix = 32
   }
@@ -206,7 +206,7 @@ run "span_12_bits_supported" {
   command = plan
 
   variables {
-    base_cidr = "0.0.0.0/20"
+    base_cidr  = "10.0.0.0/20"
     min_prefix = 20
     max_prefix = 32
   }
@@ -224,7 +224,7 @@ run "span_13_bits_supported" {
   command = plan
 
   variables {
-    base_cidr = "0.0.0.0/19"
+    base_cidr  = "10.0.0.0/19"
     min_prefix = 19
     max_prefix = 32
   }
@@ -242,7 +242,7 @@ run "span_14_bits_supported" {
   command = plan
 
   variables {
-    base_cidr = "0.0.0.0/18"
+    base_cidr  = "10.0.0.0/18"
     min_prefix = 18
     max_prefix = 32
   }
@@ -260,7 +260,7 @@ run "span_15_bits_supported" {
   command = plan
 
   variables {
-    base_cidr = "0.0.0.0/17"
+    base_cidr  = "10.0.0.0/17"
     min_prefix = 17
     max_prefix = 32
   }
@@ -278,7 +278,7 @@ run "span_16_bits_supported" {
   command = plan
 
   variables {
-    base_cidr = "0.0.0.0/16"
+    base_cidr  = "10.0.0.0/16"
     min_prefix = 16
     max_prefix = 32
   }
@@ -296,7 +296,7 @@ run "span_17_bits_supported" {
   command = plan
 
   variables {
-    base_cidr = "0.0.0.0/15"
+    base_cidr  = "10.0.0.0/15"
     min_prefix = 15
     max_prefix = 32
   }
@@ -314,7 +314,7 @@ run "span_18_bits_supported" {
   command = plan
 
   variables {
-    base_cidr = "0.0.0.0/14"
+    base_cidr  = "10.0.0.0/14"
     min_prefix = 14
     max_prefix = 32
   }
@@ -332,7 +332,7 @@ run "span_19_bits_supported" {
   command = plan
 
   variables {
-    base_cidr = "0.0.0.0/13"
+    base_cidr  = "10.0.0.0/13"
     min_prefix = 13
     max_prefix = 32
   }
@@ -350,7 +350,7 @@ run "span_20_bits_supported" {
   command = plan
 
   variables {
-    base_cidr = "0.0.0.0/12"
+    base_cidr  = "10.0.0.0/12"
     min_prefix = 12
     max_prefix = 32
   }
@@ -368,7 +368,7 @@ run "span_21_bits_supported" {
   command = plan
 
   variables {
-    base_cidr = "0.0.0.0/11"
+    base_cidr  = "10.0.0.0/11"
     min_prefix = 11
     max_prefix = 32
   }
@@ -386,7 +386,7 @@ run "span_22_bits_supported" {
   command = plan
 
   variables {
-    base_cidr = "0.0.0.0/10"
+    base_cidr  = "10.0.0.0/10"
     min_prefix = 10
     max_prefix = 32
   }
@@ -404,7 +404,7 @@ run "span_23_bits_supported" {
   command = plan
 
   variables {
-    base_cidr = "0.0.0.0/9"
+    base_cidr  = "10.0.0.0/9"
     min_prefix = 9
     max_prefix = 32
   }
@@ -422,7 +422,7 @@ run "span_24_bits_supported" {
   command = plan
 
   variables {
-    base_cidr = "0.0.0.0/8"
+    base_cidr  = "10.0.0.0/8"
     min_prefix = 8
     max_prefix = 32
   }
@@ -440,7 +440,7 @@ run "span_25_bits_supported" {
   command = plan
 
   variables {
-    base_cidr = "0.0.0.0/7"
+    base_cidr  = "10.0.0.0/7"
     min_prefix = 7
     max_prefix = 32
   }
@@ -454,7 +454,7 @@ run "span_26_bits_supported" {
   command = plan
 
   variables {
-    base_cidr = "0.0.0.0/6"
+    base_cidr  = "12.0.0.0/6"
     min_prefix = 6
     max_prefix = 32
   }
@@ -468,7 +468,7 @@ run "span_27_bits_supported" {
   command = plan
 
   variables {
-    base_cidr = "0.0.0.0/5"
+    base_cidr  = "8.0.0.0/5"
     min_prefix = 5
     max_prefix = 32
   }
@@ -482,7 +482,7 @@ run "span_28_bits_supported" {
   command = plan
 
   variables {
-    base_cidr = "0.0.0.0/4"
+    base_cidr  = "16.0.0.0/4"
     min_prefix = 4
     max_prefix = 32
   }
@@ -496,7 +496,7 @@ run "span_29_bits_supported" {
   command = plan
 
   variables {
-    base_cidr = "0.0.0.0/3"
+    base_cidr  = "32.0.0.0/3"
     min_prefix = 3
     max_prefix = 32
   }
@@ -510,7 +510,7 @@ run "span_30_bits_supported" {
   command = plan
 
   variables {
-    base_cidr = "0.0.0.0/2"
+    base_cidr  = "64.0.0.0/2"
     min_prefix = 2
     max_prefix = 32
   }
@@ -524,7 +524,7 @@ run "span_31_bits_supported" {
   command = plan
 
   variables {
-    base_cidr = "0.0.0.0/1"
+    base_cidr  = "128.0.0.0/1"
     min_prefix = 1
     max_prefix = 32
   }
@@ -538,7 +538,7 @@ run "span_32_bits_supported" {
   command = plan
 
   variables {
-    base_cidr = "0.0.0.0/0"
+    base_cidr  = "0.0.0.0/0"
     min_prefix = 0
     max_prefix = 32
   }

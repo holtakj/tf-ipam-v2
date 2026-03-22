@@ -9,7 +9,7 @@ run "min_max_equal_base_prefix_computes_single_size" {
   command = plan
 
   variables {
-    base_cidr = "10.0.0.0/24"
+    base_cidr  = "10.0.0.0/24"
     min_prefix = 24
     max_prefix = 24
   }
@@ -30,7 +30,7 @@ run "max_prefix_length_at_exact_12_bit_span_boundary" {
   command = plan
 
   variables {
-    base_cidr = "10.0.0.0/22"
+    base_cidr  = "10.0.0.0/22"
     min_prefix = 20
     max_prefix = 32
   }
@@ -50,7 +50,7 @@ run "max_prefix_length_more_than_12_bits_above_min_now_passes" {
   command = plan
 
   variables {
-    base_cidr = "10.0.0.0/19"
+    base_cidr  = "10.0.0.0/19"
     min_prefix = 19
     max_prefix = 32
   }
@@ -76,7 +76,7 @@ run "min_max_at_32_single_host_route" {
   command = plan
 
   variables {
-    base_cidr = "10.0.0.0/32"
+    base_cidr  = "10.0.0.0/32"
     min_prefix = 32
     max_prefix = 32
   }
@@ -102,7 +102,7 @@ run "min_max_at_1_broadest_network_fails_variable_validation" {
   command = plan
 
   variables {
-    base_cidr = "0.0.0.0/1"
+    base_cidr  = "0.0.0.0/1"
     min_prefix = 1
     max_prefix = 1
   }
@@ -115,19 +115,19 @@ run "min_max_at_1_broadest_network_fails_variable_validation" {
 
 # ── Failing: check block violations ──────────────────────────────────────────
 
-# base_cidr prefix (7) is lower than min_prefix (8).
-run "base_cidr_broader_than_min_prefix_length_passes" {
+# base_cidr prefix (10) is lower than min_prefix (11) and still in a subnets-enabled category.
+run "base_cidr_broader_than_min_prefix_length_passes_subnets_enabled_cgnat" {
   command = plan
 
   variables {
-    base_cidr = "10.0.0.0/7"
-    min_prefix = 8
-    max_prefix = 8
+    base_cidr  = "100.64.0.0/10"
+    min_prefix = 11
+    max_prefix = 11
   }
 
   assert {
-    condition     = output.subnet_count["/8"] == 2
-    error_message = "A /7 base should contain 2 /8 subnets."
+    condition     = output.subnet_count["/11"] == 2
+    error_message = "A /10 base should contain 2 /11 subnets when base_cidr is in a subnets-enabled category."
   }
 }
 
@@ -136,7 +136,7 @@ run "max_prefix_length_below_min_prefix_length_fails" {
   command = plan
 
   variables {
-    base_cidr = "10.0.0.0/24"
+    base_cidr  = "10.0.0.0/24"
     min_prefix = 24
     max_prefix = 23
   }
@@ -151,7 +151,7 @@ run "base_cidr_narrower_than_max_prefix_length_fails" {
   command = plan
 
   variables {
-    base_cidr = "10.0.0.0/28"
+    base_cidr  = "10.0.0.0/28"
     min_prefix = 20
     max_prefix = 24
   }
@@ -168,7 +168,7 @@ run "min_prefix_length_zero_out_of_range_fails" {
   command = plan
 
   variables {
-    base_cidr = "10.0.0.0/24"
+    base_cidr  = "10.0.0.0/24"
     min_prefix = 0
     max_prefix = 24
   }
@@ -183,7 +183,7 @@ run "max_prefix_length_33_out_of_range_fails" {
   command = plan
 
   variables {
-    base_cidr = "10.0.0.0/24"
+    base_cidr  = "10.0.0.0/24"
     min_prefix = 24
     max_prefix = 33
   }

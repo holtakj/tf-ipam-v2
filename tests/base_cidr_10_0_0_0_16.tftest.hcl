@@ -2,7 +2,7 @@ run "subnet_count_map_for_10_0_0_0_16" {
   command = plan
 
   variables {
-    base_cidr = "10.0.0.0/16"
+    base_cidr  = "10.0.0.0/16"
     min_prefix = 14
     max_prefix = 26
   }

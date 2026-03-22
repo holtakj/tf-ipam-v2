@@ -22,20 +22,9 @@ This module supports **IPv4 only**.
 | --- | --- |
 | Terraform | `>= 1.8.0` |
 
-### Runtime Provider Dependency
+## Documentation
 
-This module uses the [`The-DevOps-Daily/validatefx`](https://registry.terraform.io/providers/The-DevOps-Daily/validatefx) provider (`>= 0.11.2`) for CIDR overlap validation via `provider::validatefx::cidr_overlap`. The provider is **not** declared in the module's `required_providers` to preserve flexibility for consuming root configurations. The root configuration must declare it:
-
-```hcl
-terraform {
-  required_providers {
-    validatefx = {
-      source  = "registry.terraform.io/The-DevOps-Daily/validatefx"
-      version = ">= 0.11.2"
-    }
-  }
-}
-```
+- Detailed examples: [docs/example-usage.md](docs/example-usage.md)
 
 ## Inputs
 
@@ -53,7 +42,7 @@ terraform {
 | --- | --- | --- |
 | `subnet_count` | `map(number)` | Number of subnets that can be carved from `base_cidr` for each CIDR size key (`"/<min_prefix>"..."/<max_prefix>"`). |
 | `next_free_cidrs` | `map(list(object))` | For each size key (`"/<min_prefix>"..."/<max_prefix>"`), a list (possibly empty) of up to `suggest_count` objects `{ cidr_base, size, cidr, reservable_subnet_count, alignment_skipped_ip_count }`. |
-| `next_free_cidr` | `map(object \| null)` | For each size key (`"/<min_prefix>"..."/<max_prefix>"`), the first next-free suggestion object or `null` when unavailable. |
+| `next_free_cidr` | `map(object \| null)` | For each size key (`"/<min_prefix>"..."/<max_prefix>"`), the first next-free suggestion object or `null` when unavailable. Object fields: `{ cidr_base, size, cidr, reservable_subnet_count, alignment_skipped_ip_count }`. |
 | `reserved` | `map(string)` | Echo of reserved CIDRs (name -> CIDR). |
 
 ## Validation Rules
@@ -61,27 +50,31 @@ terraform {
 The module enforces:
 
 - `max_prefix >= min_prefix`
+- `base_cidr` must be in a subnets-enabled category (`private_use` or `carrier_grade_nat`)
 - `base_cidr` is canonical (host bits zeroed, for example `10.0.0.0/24`)
 - `base_cidr` prefix is not broader than `min_prefix`
 - `base_cidr` prefix is not narrower than `max_prefix`
 - reservation CIDR values are unique
 - reservation CIDRs are canonical/aligned/in range for current bounds
-- reservation CIDRs do not overlap (`validatefx::cidr_overlap`)
+- reservation CIDRs do not overlap (native sorted-range check, O(n log n))
+
+Allowed subnet-processing categories are defined in `ipv4_space_categories.tf` via the `subnets` flag.
 
 ## Algorithm Overview
 
 1. Convert `base_cidr` and reservation CIDRs into integer ranges.
-2. Sort and intersect reservation ranges against the base range.
-3. Derive contiguous free IP segments between reserved ranges.
-4. For each CIDR size, convert free segments into valid aligned subnet index intervals.
-5. Aggregate interval lengths into `reservable_subnet_count`.
-6. Materialize first valid index as the `next_free_cidr` suggestion.
+2. Sort reservation ranges and verify adjacent pairs are disjoint (overlap validation in O(n log n)).
+3. Intersect reservation ranges against the base range.
+4. Derive contiguous free IP segments between reserved ranges.
+5. For each CIDR size, convert free segments into valid aligned subnet index intervals.
+6. Aggregate interval lengths into `reservable_subnet_count`.
+7. Materialize first valid index as the `next_free_cidr` suggestion.
 
 This produces deterministic results with predictable complexity even for large spans.
 
 ## Testing
 
-Tests require the `validatefx` provider. The `test.sh` wrapper script temporarily injects the provider declaration, runs `terraform init` and `terraform test`, then cleans up:
+The `test.sh` wrapper script runs `terraform init`, `terraform validate`, and `terraform test`:
 
 ```bash
 ./test.sh
@@ -136,14 +129,6 @@ output "next_free_24_candidates" {
   reservable_subnet_count    = 239
   alignment_skipped_ip_count = 0
 }
-```
-
-## Testing
-
-From module directory:
-
-```bash
-terraform test
 ```
 
 The repository includes taxative tests for prefix spans, next-free behavior, alignment skip counts, and limit guardrails.

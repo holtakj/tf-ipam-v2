@@ -2,7 +2,7 @@ run "next_free_suggestions_without_reservations" {
   command = plan
 
   variables {
-    base_cidr = "10.0.0.0/30"
+    base_cidr  = "10.0.0.0/30"
     min_prefix = 30
     max_prefix = 32
   }
@@ -71,7 +71,7 @@ run "next_free_suggestions_skip_reserved_head_subnets" {
   command = plan
 
   variables {
-    base_cidr = "10.0.0.0/29"
+    base_cidr  = "10.0.0.0/29"
     min_prefix = 29
     max_prefix = 32
 
@@ -118,7 +118,7 @@ run "next_free_suggestions_fragmented_space_across_sizes" {
   command = plan
 
   variables {
-    base_cidr = "10.0.0.0/28"
+    base_cidr  = "10.0.0.0/28"
     min_prefix = 28
     max_prefix = 32
 
@@ -166,7 +166,7 @@ run "next_free_suggestions_hide_broader_sizes_than_base" {
   command = plan
 
   variables {
-    base_cidr = "10.0.0.0/24"
+    base_cidr  = "10.0.0.0/24"
     min_prefix = 22
     max_prefix = 26
   }
@@ -208,7 +208,7 @@ run "next_free_suggestions_do_not_create_gap_between_touching_reservations" {
   command = plan
 
   variables {
-    base_cidr = "10.0.0.0/30"
+    base_cidr  = "10.0.0.0/30"
     min_prefix = 30
     max_prefix = 31
 
@@ -231,10 +231,10 @@ run "next_free_suggestions_respect_configurable_count_per_size" {
   command = plan
 
   variables {
-    base_cidr           = "10.0.0.0/28"
-    min_prefix           = 30
-    max_prefix           = 32
-    suggest_count  = 3
+    base_cidr     = "10.0.0.0/28"
+    min_prefix    = 30
+    max_prefix    = 32
+    suggest_count = 3
   }
 
   assert {

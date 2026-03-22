@@ -2,7 +2,7 @@ run "base_10_0_0_0_16_with_1024_contiguous_reservations_has_no_free_24" {
   command = plan
 
   variables {
-    base_cidr = "10.0.0.0/16"
+    base_cidr  = "10.0.0.0/16"
     min_prefix = 16
     max_prefix = 32
 

@@ -2,7 +2,7 @@ run "base_10_0_0_0_16_with_single_mid_24_gap_suggests_that_24" {
   command = plan
 
   variables {
-    base_cidr = "10.0.0.0/16"
+    base_cidr  = "10.0.0.0/16"
     min_prefix = 16
     max_prefix = 32
 

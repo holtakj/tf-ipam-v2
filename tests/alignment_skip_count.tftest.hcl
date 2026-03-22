@@ -2,7 +2,7 @@ run "alignment_skipped_ip_count_is_zero_without_reservations" {
   command = plan
 
   variables {
-    base_cidr = "10.0.0.0/30"
+    base_cidr  = "10.0.0.0/30"
     min_prefix = 30
     max_prefix = 32
   }
@@ -44,7 +44,7 @@ run "alignment_skipped_ip_count_counts_only_free_ips_before_first_aligned_subnet
   command = plan
 
   variables {
-    base_cidr = "10.0.0.0/29"
+    base_cidr  = "10.0.0.0/29"
     min_prefix = 29
     max_prefix = 32
 
@@ -91,7 +91,7 @@ run "alignment_skipped_ip_count_large_16_base_network" {
   command = plan
 
   variables {
-    base_cidr = "10.0.0.0/16"
+    base_cidr  = "10.0.0.0/16"
     min_prefix = 16
     max_prefix = 28
   }
@@ -203,7 +203,7 @@ run "alignment_skipped_ip_count_is_computed_when_32_is_out_of_scope" {
   command = plan
 
   variables {
-    base_cidr = "10.0.0.0/29"
+    base_cidr  = "10.0.0.0/29"
     min_prefix = 29
     max_prefix = 31
 

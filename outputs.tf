@@ -3,6 +3,11 @@ output "subnet_count" {
   value       = local.subnet_count
 
   precondition {
+    condition     = local.base_cidr_subnets_enabled
+    error_message = "base_cidr must be in a subnets-enabled category. Allowed categories are private_use and carrier_grade_nat."
+  }
+
+  precondition {
     condition     = var.max_prefix >= var.min_prefix
     error_message = format("max_prefix /%d must be greater than or equal to min_prefix /%d.", var.max_prefix, var.min_prefix)
   }

@@ -2,7 +2,7 @@ run "maximum_supported_chunked_workload" {
   command = plan
 
   variables {
-    base_cidr = "10.0.0.0/8"
+    base_cidr  = "10.0.0.0/8"
     min_prefix = 8
     max_prefix = 32
   }
