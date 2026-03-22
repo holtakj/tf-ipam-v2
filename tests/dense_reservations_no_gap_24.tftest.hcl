@@ -15,10 +15,10 @@ run "base_10_0_0_0_16_with_1024_contiguous_reservations_has_no_free_24" {
 
   assert {
     condition = (
-      output.free_cidr_suggestions["/24"] == null &&
+      output.free_cidr_suggestions["/24"] == [] &&
       output.subnet_count_by_cidr_size["/24"] == 256 &&
-      output.free_cidr_suggestions["/26"] == null &&
-      output.free_cidr_suggestions["/32"] == null
+      output.free_cidr_suggestions["/26"] == [] &&
+      output.free_cidr_suggestions["/32"] == []
     )
     error_message = "With 1024 contiguous /26 reservations covering the full /16, there must be no free /24 (or any smaller subnet) left to reserve."
   }

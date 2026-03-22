@@ -45,13 +45,14 @@ terraform {
 | `min_prefix_length` | `number` | `8` | Broadest/largest prefix included in computation/reservations (`8..32`). |
 | `max_prefix_length` | `number` | `32` | Narrowest/smallest prefix included in computation/reservations (`8..32`). |
 | `reservations` | `map(string)` | `{}` | Map of reservation name to canonical CIDR. Names are stable keys; CIDRs must be canonical, valid, and non-overlapping. |
+| `free_cidr_suggestion_count` | `number` | `1` | Number of next-free CIDR suggestions to return per size key (`1..1024`). |
 
 ## Outputs
 
 | Name | Type | Description |
 | --- | --- | --- |
 | `subnet_count_by_cidr_size` | `map(number)` | Number of subnets that can be carved from `base_network_cidr` for each CIDR size key (`"/<min_prefix_length>"..."/<max_prefix_length>"`). |
-| `free_cidr_suggestions` | `map(object \| null)` | For each size key (`"/<min_prefix_length>"..."/<max_prefix_length>"`), either `null` or `{ cidr_base, size, cidr, reservable_subnet_count, alignment_skipped_ip_count }`. |
+| `free_cidr_suggestions` | `map(list(object))` | For each size key (`"/<min_prefix_length>"..."/<max_prefix_length>"`), a list (possibly empty) of up to `free_cidr_suggestion_count` objects `{ cidr_base, size, cidr, reservable_subnet_count, alignment_skipped_ip_count }`. |
 | `reserved` | `map(string)` | Echo of reservations (name -> CIDR). |
 
 ## Validation Rules
@@ -108,11 +109,11 @@ module "ipam" {
 }
 ```
 
-### Example: Read next-free `/24`
+### Example: Read first next-free `/24`
 
 ```hcl
 output "next_free_24" {
-  value = module.ipam.free_cidr_suggestions["/24"]
+  value = try(module.ipam.free_cidr_suggestions["/24"][0], null)
 }
 ```
 

@@ -171,43 +171,51 @@ locals {
     )
   }
 
-  # The first free subnet index is used to materialize the next allocatable CIDR per size.
-  # Because intervals are generated from ordered free segments, index [0] is the earliest fit.
-  first_free_subnet_index_by_size = {
-    for cidr_size in local.scoped_cidr_sizes : cidr_size => try(local.free_subnet_index_ranges_by_size[cidr_size][0].first, null)
-  }
-
-  first_free_subnet_start_int_by_size = {
+  # Build candidate indices per CIDR size from each free interval.
+  # We keep at most free_cidr_suggestion_count indices per interval, then slice globally per size.
+  candidate_free_subnet_indices_by_size = {
     for cidr_size in local.scoped_cidr_sizes : cidr_size => (
-      local.first_free_subnet_index_by_size[cidr_size] == null
-      ? null
-      : local.base_start_int + (local.first_free_subnet_index_by_size[cidr_size] * pow(2, 32 - cidr_size))
+      !local.computation_enabled || cidr_size < local.base_prefix_length ? [] : flatten([
+        for free_range in local.free_subnet_index_ranges_by_size[cidr_size] : [
+          for offset in range(min(var.free_cidr_suggestion_count, free_range.last - free_range.first + 1)) :
+          free_range.first + offset
+        ]
+      ])
     )
   }
 
-  # Emit next-free suggestions for sizes within scope (min_prefix_length.. max_prefix_length), using null when unavailable.
-  # For a given size, we emit:
-  # - cidr_base/cidr: first allocatable aligned subnet
+  selected_free_subnet_indices_by_size = {
+    for cidr_size in local.scoped_cidr_sizes : cidr_size => (
+      slice(
+        local.candidate_free_subnet_indices_by_size[cidr_size],
+        0,
+        min(var.free_cidr_suggestion_count, length(local.candidate_free_subnet_indices_by_size[cidr_size]))
+      )
+    )
+  }
+
+  # Emit next-free suggestions for sizes within scope (min_prefix_length.. max_prefix_length).
+  # For each size key, return up to free_cidr_suggestion_count allocatable aligned subnets.
+  # For every suggestion we emit:
+  # - cidr_base/cidr: allocatable aligned subnet
   # - reservable_subnet_count: total allocatable aligned subnets of that size
-  # - alignment_skipped_ip_count: number of free IPs that occur before that first aligned fit
+  # - alignment_skipped_ip_count: number of free IPs that occur before this aligned suggestion
   next_free_cidr_suggestions_by_size = {
     for cidr_size in local.scoped_cidr_sizes :
-    format("/%d", cidr_size) => (
-      local.first_free_subnet_index_by_size[cidr_size] != null ? {
-        cidr_base               = split("/", cidrsubnet(var.base_network_cidr, cidr_size - local.base_prefix_length, local.first_free_subnet_index_by_size[cidr_size]))[0]
+    format("/%d", cidr_size) => [
+      for subnet_index in local.selected_free_subnet_indices_by_size[cidr_size] : {
+        cidr_base               = split("/", cidrsubnet(var.base_network_cidr, cidr_size - local.base_prefix_length, subnet_index))[0]
         size                    = cidr_size
-        cidr                    = cidrsubnet(var.base_network_cidr, cidr_size - local.base_prefix_length, local.first_free_subnet_index_by_size[cidr_size])
+        cidr                    = cidrsubnet(var.base_network_cidr, cidr_size - local.base_prefix_length, subnet_index)
         reservable_subnet_count = local.reservable_subnet_count_by_size[cidr_size]
-        # Count free IPs skipped before the first aligned subnet for this size.
-        # We sum overlap of each free segment with (-inf, first_free_start-1].
         alignment_skipped_ip_count = sum([
           for free_segment in local.free_ip_segments : max(
             0,
-            min(free_segment.end_int, local.first_free_subnet_start_int_by_size[cidr_size] - 1) - free_segment.start_int + 1
+            min(free_segment.end_int, (local.base_start_int + (subnet_index * pow(2, 32 - cidr_size))) - 1) - free_segment.start_int + 1
           )
         ])
-      } : null
-    )
+      }
+    ]
   }
 }
 

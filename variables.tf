@@ -52,3 +52,14 @@ variable "reservations" {
   }
 }
 
+variable "free_cidr_suggestion_count" {
+  description = "How many next-free CIDR suggestions to return per prefix length."
+  type        = number
+  default     = 1
+
+  validation {
+    condition     = var.free_cidr_suggestion_count >= 1 && var.free_cidr_suggestion_count <= 1024 && floor(var.free_cidr_suggestion_count) == var.free_cidr_suggestion_count
+    error_message = "The 'free_cidr_suggestion_count' variable must be an integer from 1 to 1024."
+  }
+}
+
