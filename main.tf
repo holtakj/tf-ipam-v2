@@ -273,6 +273,71 @@ locals {
     )
   }
 
+  # Reservation heat-map for terminal-friendly visualization.
+  # We divide the base CIDR into fixed-count buckets and compute per-bucket
+  # reserved density based on IP overlap against reservation blockers.
+  reservation_heatmap_total_ips = local.base_end_int - local.base_start_int + 1
+  reservation_heatmap_bucket_count = min(
+    64,
+    max(1, floor(local.reservation_heatmap_total_ips))
+  )
+  reservation_heatmap_bucket_size = ceil(local.reservation_heatmap_total_ips / local.reservation_heatmap_bucket_count)
+
+  reservation_heatmap_bucket_ranges = [
+    for bucket_index in range(local.reservation_heatmap_bucket_count) : {
+      bucket_index = bucket_index
+      start_offset = bucket_index * local.reservation_heatmap_bucket_size
+      end_offset = min(
+        local.reservation_heatmap_total_ips - 1,
+        ((bucket_index + 1) * local.reservation_heatmap_bucket_size) - 1
+      )
+      start_int = local.base_start_int + (bucket_index * local.reservation_heatmap_bucket_size)
+      end_int = min(
+        local.base_end_int,
+        local.base_start_int + (((bucket_index + 1) * local.reservation_heatmap_bucket_size) - 1)
+      )
+    }
+  ]
+
+  reservation_heatmap_reserved_ips_by_bucket = [
+    for bucket in local.reservation_heatmap_bucket_ranges : (
+      length(local.sorted_blocking_ranges) == 0
+      ? 0
+      : sum([
+        for reservation in local.sorted_blocking_ranges : max(
+          0,
+          min(bucket.end_int, reservation.end_int) - max(bucket.start_int, reservation.start_int) + 1
+        )
+      ])
+    )
+  ]
+
+  reservation_heatmap_buckets = [
+    for bucket in local.reservation_heatmap_bucket_ranges : {
+      bucket_index = bucket.bucket_index
+      start_ip     = cidrhost(var.base_cidr, bucket.start_offset)
+      end_ip       = cidrhost(var.base_cidr, bucket.end_offset)
+      total_ips    = bucket.end_int - bucket.start_int + 1
+      reserved_ips = local.reservation_heatmap_reserved_ips_by_bucket[bucket.bucket_index]
+      reserved_ratio_percent = (
+        bucket.end_int - bucket.start_int + 1 == 0
+        ? 0
+        : 100 * local.reservation_heatmap_reserved_ips_by_bucket[bucket.bucket_index] / (bucket.end_int - bucket.start_int + 1)
+      )
+      shade = (
+        local.reservation_heatmap_reserved_ips_by_bucket[bucket.bucket_index] == 0
+        ? "_"
+        : local.reservation_heatmap_reserved_ips_by_bucket[bucket.bucket_index] == (bucket.end_int - bucket.start_int + 1)
+        ? "#"
+        : 100 * local.reservation_heatmap_reserved_ips_by_bucket[bucket.bucket_index] / (bucket.end_int - bucket.start_int + 1) < 50
+        ? "."
+        : ":"
+      )
+    }
+  ]
+
+  reservation_heatmap_strip = join("", [for bucket in local.reservation_heatmap_buckets : bucket.shade])
+
   # Build candidate indices per CIDR size from each free interval.
   # We keep at most suggest_count indices per interval, then slice globally per size.
   candidate_free_subnet_indices_by_size = {

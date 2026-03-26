@@ -64,3 +64,15 @@ output "reserved" {
     error_message = "Reserved CIDRs must not overlap."
   }
 }
+
+output "zzz_graph" {
+  description = "Terminal-friendly reservation heat-map and bucket detail. Intentionally named to print last in Terraform output listings."
+  value = {
+    base_cidr       = var.base_cidr
+    bucket_count    = local.reservation_heatmap_bucket_count
+    bucket_size_ips = local.reservation_heatmap_bucket_size
+    legend          = "_=0%, .=<50%, :=50-99%, #=100%"
+    heatmap         = local.reservation_heatmap_strip
+    buckets         = local.reservation_heatmap_buckets
+  }
+}

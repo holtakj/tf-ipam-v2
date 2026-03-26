@@ -110,3 +110,43 @@ output "reserved_map" {
 This output returns the validated reservation map as `name -> value`, where each
 value is either a canonical CIDR string or an `start-end` IP range string,
 exactly as supplied in the `reserved` input.
+
+## Heat-map Graph
+
+The `zzz_graph` output provides a 64-character ASCII heat-map of the base CIDR's
+IP space, printed last in `terraform output` listings.
+
+```hcl
+output "graph" {
+  value = module.ipam.zzz_graph
+}
+```
+
+Example output for a `/16` with the lower half reserved:
+
+```
+{
+  base_cidr       = "10.0.0.0/16"
+  bucket_count    = 64
+  bucket_size_ips = 1024
+  legend          = "_=0%, .=<50%, :=50-99%, #=100%"
+  heatmap         = "################################________________________________"
+  buckets         = [
+    { bucket_index = 0,  start_ip = "10.0.0.0",   end_ip = "10.0.3.255",   total_ips = 1024, reserved_ips = 1024, reserved_ratio_percent = 100, shade = "#" },
+    ...
+    { bucket_index = 31, start_ip = "10.0.124.0",  end_ip = "10.0.127.255", total_ips = 1024, reserved_ips = 1024, reserved_ratio_percent = 100, shade = "#" },
+    { bucket_index = 32, start_ip = "10.0.128.0",  end_ip = "10.0.131.255", total_ips = 1024, reserved_ips = 0,    reserved_ratio_percent = 0,   shade = "_" },
+    ...
+    { bucket_index = 63, start_ip = "10.0.252.0",  end_ip = "10.0.255.255", total_ips = 1024, reserved_ips = 0,    reserved_ratio_percent = 0,   shade = "_" },
+  ]
+}
+```
+
+**Shade legend:**
+
+| Char | Meaning |
+|------|---------|
+| `_`  | 0% — free |
+| `.`  | 1–49% — less than half used |
+| `:`  | 50–99% — more than half used |
+| `#`  | 100% — fully reserved |
