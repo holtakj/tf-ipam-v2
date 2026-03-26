@@ -18,6 +18,30 @@ module "ipam" {
     data     = "10.42.32.0/20"
     edge     = "10.42.64.0/21"
   }
+
+## Reserving an Arbitrary IP Range
+
+Use `start-end` notation to block an address range that does not align to a
+CIDR boundary (for example, a legacy allocation handed over without a prefix):
+
+```hcl
+module "ipam" {
+  source = "../"
+
+  base_cidr = "10.42.0.0/16"
+
+  reserved = {
+    platform      = "10.42.0.0/20"            # canonical CIDR
+    legacy_legacy = "10.42.20.0-10.42.20.199" # arbitrary IP range (200 addresses)
+  }
+}
+```
+
+IP range values must satisfy:
+- Format: `A.B.C.D-E.F.G.H` (no spaces, valid IPv4 octets)
+- `start <= end`
+- Both addresses fall within `base_cidr`
+- Range does not overlap any other reservation
 }
 ```
 
@@ -55,6 +79,24 @@ output "next_free_24_candidates" {
   reservable_subnet_count    = 200
   alignment_skipped_ip_count = 0
 }
+
+## Read Reserved Usage Percentage by Prefix
+
+```hcl
+output "usage_24" {
+  value = module.ipam.subnet_usage_by_size["/24"]
+}
+```
+
+Expected shape:
+
+```hcl
+{
+  reservable_subnet_count    = 200
+  reserved_subnet_count      = 56
+  reserved_subnet_percentage = 21.875
+}
+```
 ```
 
 ## Echoed Reservations
@@ -65,4 +107,6 @@ output "reserved_map" {
 }
 ```
 
-This output returns the validated reservation map as `name -> cidr`.
+This output returns the validated reservation map as `name -> value`, where each
+value is either a canonical CIDR string or an `start-end` IP range string,
+exactly as supplied in the `reserved` input.
