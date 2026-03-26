@@ -23,6 +23,27 @@ run "output_contracts_without_reserved" {
   }
 
   assert {
+    condition = jsonencode(output.subnet_usage_by_size) == jsonencode({
+      "/30" = {
+        reservable_subnet_count    = 1
+        reserved_subnet_count      = 0
+        reserved_subnet_percentage = 0
+      }
+      "/31" = {
+        reservable_subnet_count    = 2
+        reserved_subnet_count      = 0
+        reserved_subnet_percentage = 0
+      }
+      "/32" = {
+        reservable_subnet_count    = 4
+        reserved_subnet_count      = 0
+        reserved_subnet_percentage = 0
+      }
+    })
+    error_message = "subnet_usage_by_size must report reservable/reserved counts and percentages for each prefix."
+  }
+
+  assert {
     condition = jsonencode(output.next_free_cidrs) == jsonencode({
       "/30" = [
         {
@@ -134,6 +155,22 @@ run "output_contracts_when_no_capacity_left" {
       "/31" = null
     })
     error_message = "next_free_cidr must be null when no suggestion is available."
+  }
+
+  assert {
+    condition = jsonencode(output.subnet_usage_by_size) == jsonencode({
+      "/30" = {
+        reservable_subnet_count    = 0
+        reserved_subnet_count      = 1
+        reserved_subnet_percentage = 100
+      }
+      "/31" = {
+        reservable_subnet_count    = 0
+        reserved_subnet_count      = 2
+        reserved_subnet_percentage = 100
+      }
+    })
+    error_message = "subnet_usage_by_size must report full reservation (100%) when no capacity remains."
   }
 
   assert {

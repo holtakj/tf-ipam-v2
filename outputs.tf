@@ -28,18 +28,35 @@ output "next_free_cidr" {
   value       = local.next_free_cidr_suggestion_by_size
 }
 
+output "subnet_usage_by_size" {
+  description = "Per-size subnet usage keyed from /<min_prefix> to /<max_prefix> with fields: reservable_subnet_count, reserved_subnet_count, reserved_subnet_percentage."
+  value = {
+    for cidr_size in local.scoped_cidr_sizes :
+    format("/%d", cidr_size) => {
+      reservable_subnet_count    = local.reservable_subnet_count_by_size[cidr_size]
+      reserved_subnet_count      = local.reserved_subnet_count_by_size[cidr_size]
+      reserved_subnet_percentage = local.reserved_subnet_percentage_by_size[cidr_size]
+    }
+  }
+}
+
 output "reserved" {
-  description = "Map of all reservation names to CIDRs."
+  description = "Map of all reservation names to their values (canonical IPv4 CIDR or IP range)."
   value       = var.reserved
 
   precondition {
     condition     = local.reserved_cidrs_unique
-    error_message = "Reservation CIDRs must be unique."
+    error_message = "Reservation values must be unique."
   }
 
   precondition {
     condition     = local.reserved_cidrs_exist
     error_message = "Every reservation CIDR must be canonical, aligned to the base network, within the base range, and within [min_prefix, max_prefix]."
+  }
+
+  precondition {
+    condition     = local.reserved_ip_ranges_valid
+    error_message = "Every IP range reservation must have start address ≤ end address and the entire range must fall within the base CIDR window."
   }
 
   precondition {

@@ -69,6 +69,7 @@ locals {
   # Normalize reservation CIDRs and precompute numeric range boundaries.
   # canonical_cidr enforces host-bit normalization (e.g. 10.0.0.1/24 -> 10.0.0.0/24).
   # subnet_size is later reused to validate alignment against the base start offset.
+  # Only CIDR-formatted values are processed here; IP ranges are handled in reserved_ip_range_ranges.
   reserved_ranges = [
     for cidr in local.reserved_cidrs : {
       cidr           = cidr
@@ -90,18 +91,48 @@ locals {
         1
       )
     }
+    if can(cidrnetmask(cidr))
   ]
+
+  # Parse start/end integer boundaries from IP range values ("a.b.c.d-e.f.g.h" format).
+  reserved_ip_range_values = [
+    for v in local.reserved_cidrs : v if !can(cidrnetmask(v))
+  ]
+
+  reserved_ip_range_ranges = [
+    for v in local.reserved_ip_range_values : {
+      start_int = (
+        tonumber(split(".", split("-", v)[0])[0]) * 16777216 +
+        tonumber(split(".", split("-", v)[0])[1]) * 65536 +
+        tonumber(split(".", split("-", v)[0])[2]) * 256 +
+        tonumber(split(".", split("-", v)[0])[3])
+      )
+      end_int = (
+        tonumber(split(".", split("-", v)[1])[0]) * 16777216 +
+        tonumber(split(".", split("-", v)[1])[1]) * 65536 +
+        tonumber(split(".", split("-", v)[1])[2]) * 256 +
+        tonumber(split(".", split("-", v)[1])[3])
+      )
+    }
+  ]
+
+  # Unified integer ranges from both CIDR and IP-range reservations.
+  # Used for overlap detection and blocking-range derivation below.
+  all_reserved_int_ranges = concat(
+    [for r in local.reserved_ranges : { start_int = r.start_int, end_int = r.end_int }],
+    local.reserved_ip_range_ranges
+  )
 
   # Overlap check in O(n log n): sort by start and verify every adjacent pair is disjoint.
   sorted_reserved_range_indices = [
     for sortable in sort([
-      for index, reserved_range in local.reserved_ranges :
+      for index, reserved_range in local.all_reserved_int_ranges :
       format("%012.0f:%06d", reserved_range.start_int, index)
     ]) : tonumber(split(":", sortable)[1])
   ]
 
   sorted_reserved_ranges = [
-    for index in local.sorted_reserved_range_indices : local.reserved_ranges[index]
+    for index in local.sorted_reserved_range_indices : local.all_reserved_int_ranges[index]
   ]
 
   reserved_cidrs_non_overlapping = alltrue([
@@ -125,12 +156,22 @@ locals {
     )
   ])
 
+  # Validate IP range reservations: range must be valid (start <= end) and within the base window.
+  reserved_ip_ranges_valid = alltrue([
+    for r in local.reserved_ip_range_ranges : (
+      local.computation_enabled &&
+      r.start_int <= r.end_int &&
+      r.start_int >= local.base_start_int &&
+      r.end_int <= local.base_end_int
+    )
+  ])
+
 
 
   # Intersect reservation ranges with the base range so later logic only sees relevant blockers.
   # Although checks already constrain reserved, intersection keeps this stage defensive and local.
   blocking_reserved_ranges = [
-    for reserved_range in local.reserved_ranges : {
+    for reserved_range in local.all_reserved_int_ranges : {
       start_int = max(local.base_start_int, reserved_range.start_int)
       end_int   = min(local.base_end_int, reserved_range.end_int)
     }
@@ -213,6 +254,22 @@ locals {
         free_range.last - free_range.first + 1
       ])
       : 0
+    )
+  }
+
+  # Per-size consumed capacity, derived from total capacity minus reservable capacity.
+  reserved_subnet_count_by_size = {
+    for cidr_size in local.scoped_cidr_sizes : cidr_size => (
+      local.subnet_count[format("/%d", cidr_size)] - local.reservable_subnet_count_by_size[cidr_size]
+    )
+  }
+
+  # Reserved capacity as percentage of total capacity for each CIDR size.
+  reserved_subnet_percentage_by_size = {
+    for cidr_size in local.scoped_cidr_sizes : cidr_size => (
+      local.subnet_count[format("/%d", cidr_size)] == 0
+      ? 0
+      : 100 * local.reserved_subnet_count_by_size[cidr_size] / local.subnet_count[format("/%d", cidr_size)]
     )
   }
 
