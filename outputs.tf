@@ -73,6 +73,5 @@ output "zzz_graph" {
     bucket_size_ips = local.reservation_heatmap_bucket_size
     legend          = "_=0%, .=<50%, :=50-99%, #=100%"
     heatmap         = local.reservation_heatmap_strip
-    buckets         = local.reservation_heatmap_buckets
   }
 }

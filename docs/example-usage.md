@@ -131,14 +131,6 @@ Example output for a `/16` with the lower half reserved:
   bucket_size_ips = 1024
   legend          = "_=0%, .=<50%, :=50-99%, #=100%"
   heatmap         = "################################________________________________"
-  buckets         = [
-    { bucket_index = 0,  start_ip = "10.0.0.0",   end_ip = "10.0.3.255",   total_ips = 1024, reserved_ips = 1024, reserved_ratio_percent = 100, shade = "#" },
-    ...
-    { bucket_index = 31, start_ip = "10.0.124.0",  end_ip = "10.0.127.255", total_ips = 1024, reserved_ips = 1024, reserved_ratio_percent = 100, shade = "#" },
-    { bucket_index = 32, start_ip = "10.0.128.0",  end_ip = "10.0.131.255", total_ips = 1024, reserved_ips = 0,    reserved_ratio_percent = 0,   shade = "_" },
-    ...
-    { bucket_index = 63, start_ip = "10.0.252.0",  end_ip = "10.0.255.255", total_ips = 1024, reserved_ips = 0,    reserved_ratio_percent = 0,   shade = "_" },
-  ]
 }
 ```
 
