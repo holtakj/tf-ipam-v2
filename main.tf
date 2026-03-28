@@ -326,14 +326,14 @@ locals {
       )
       shade = (
         local.reservation_heatmap_reserved_ips_by_bucket[bucket.bucket_index] == 0
-        ? "_"
+        ? " "
         : local.reservation_heatmap_reserved_ips_by_bucket[bucket.bucket_index] == (bucket.end_int - bucket.start_int + 1)
         ? "#"
-        : (100 * local.reservation_heatmap_reserved_ips_by_bucket[bucket.bucket_index] / (bucket.end_int - bucket.start_int + 1)) <= 25
+        : (100 * local.reservation_heatmap_reserved_ips_by_bucket[bucket.bucket_index] / (bucket.end_int - bucket.start_int + 1)) <= 33
         ? "░"
-        : (100 * local.reservation_heatmap_reserved_ips_by_bucket[bucket.bucket_index] / (bucket.end_int - bucket.start_int + 1)) <= 50
+        : (100 * local.reservation_heatmap_reserved_ips_by_bucket[bucket.bucket_index] / (bucket.end_int - bucket.start_int + 1)) <= 66
         ? "▒"
-        : (100 * local.reservation_heatmap_reserved_ips_by_bucket[bucket.bucket_index] / (bucket.end_int - bucket.start_int + 1)) <= 75
+        : (100 * local.reservation_heatmap_reserved_ips_by_bucket[bucket.bucket_index] / (bucket.end_int - bucket.start_int + 1)) < 100
         ? "▓"
         : "█"
       )
