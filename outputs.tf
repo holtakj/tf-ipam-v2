@@ -54,7 +54,7 @@ output "zzz_graph" {
     base_cidr       = var.base_cidr
     bucket_count    = local.reservation_heatmap_bucket_count
     bucket_size_ips = local.reservation_heatmap_bucket_size
-    legend          = "[space]=0%, ░=0-25%, ▒=25-50%, ▓=50-75%, █=75-100%, #=100%"
+    legend          = "O=0%, ░=1-33%, ▒=34-66%, ▓=67-99%, █=100%"
     heatmap         = local.reservation_heatmap_strip
   }
 }

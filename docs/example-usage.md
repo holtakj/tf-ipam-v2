@@ -103,8 +103,8 @@ Example output for a `/16` with the lower half reserved:
   base_cidr       = "10.0.0.0/16"
   bucket_count    = 64
   bucket_size_ips = 1024
-  legend          = "[space]=0%, ░=0-25%, ▒=25-50%, ▓=50-75%, █=75-100%, #=100%"
-  heatmap         = "################################                                  "
+  legend          = "O=0%, ░=1-33%, ▒=34-66%, ▓=67-99%, █=100%"
+  heatmap         = "████████████████████████████████OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO"
 }
 ```
 
@@ -112,9 +112,8 @@ Example output for a `/16` with the lower half reserved:
 
 | Char | Meaning |
 |------|---------|
-| `[space]`  | 0% — completely free |
-| `░`  | 0-25% — light usage |
-| `▒`  | 25-50% — moderate usage |
-| `▓`  | 50-75% — heavy usage |
-| `█`  | 75-100% — very heavily used |
-| `#`  | 100% — completely reserved |
+| `O`  | 0% — completely free |
+| `░`  | 1-33% — light usage |
+| `▒`  | 34-66% — moderate usage |
+| `▓`  | 67-99% — heavy usage |
+| `█`  | 100% — completely reserved |
