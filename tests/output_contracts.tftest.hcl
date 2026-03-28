@@ -29,7 +29,7 @@ run "output_contracts_without_reserved" {
           cidr_base                  = "10.0.0.0"
           cidr_size                  = 30
           cidr                       = "10.0.0.0/30"
-          cidr_ip_count           = 4
+          cidr_ip_count              = 4
           reservable_subnet_count    = 1
           alignment_skipped_ip_count = 0
         }
@@ -39,7 +39,7 @@ run "output_contracts_without_reserved" {
           cidr_base                  = "10.0.0.0"
           cidr_size                  = 31
           cidr                       = "10.0.0.0/31"
-          cidr_ip_count           = 2
+          cidr_ip_count              = 2
           reservable_subnet_count    = 2
           alignment_skipped_ip_count = 0
         },
@@ -47,7 +47,7 @@ run "output_contracts_without_reserved" {
           cidr_base                  = "10.0.0.2"
           cidr_size                  = 31
           cidr                       = "10.0.0.2/31"
-          cidr_ip_count           = 2
+          cidr_ip_count              = 2
           reservable_subnet_count    = 2
           alignment_skipped_ip_count = 2
         }
@@ -57,7 +57,7 @@ run "output_contracts_without_reserved" {
           cidr_base                  = "10.0.0.0"
           cidr_size                  = 32
           cidr                       = "10.0.0.0/32"
-          cidr_ip_count           = 1
+          cidr_ip_count              = 1
           reservable_subnet_count    = 4
           alignment_skipped_ip_count = 0
         },
@@ -65,7 +65,7 @@ run "output_contracts_without_reserved" {
           cidr_base                  = "10.0.0.1"
           cidr_size                  = 32
           cidr                       = "10.0.0.1/32"
-          cidr_ip_count           = 1
+          cidr_ip_count              = 1
           reservable_subnet_count    = 4
           alignment_skipped_ip_count = 1
         }

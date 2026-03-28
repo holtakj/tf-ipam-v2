@@ -16,7 +16,7 @@ run "next_free_suggestions_without_reservations" {
             cidr_base                  = "10.0.0.0"
             cidr_size                  = 30
             cidr                       = "10.0.0.0/30"
-            cidr_ip_count           = 4
+            cidr_ip_count              = 4
             reservable_subnet_count    = 1
             alignment_skipped_ip_count = 0
           }
@@ -24,7 +24,7 @@ run "next_free_suggestions_without_reservations" {
             cidr_base                  = "10.0.0.0"
             cidr_size                  = 31
             cidr                       = "10.0.0.0/31"
-            cidr_ip_count           = 2
+            cidr_ip_count              = 2
             reservable_subnet_count    = 2
             alignment_skipped_ip_count = 0
           }
@@ -32,7 +32,7 @@ run "next_free_suggestions_without_reservations" {
             cidr_base                  = "10.0.0.0"
             cidr_size                  = 32
             cidr                       = "10.0.0.0/32"
-            cidr_ip_count           = 1
+            cidr_ip_count              = 1
             reservable_subnet_count    = 4
             alignment_skipped_ip_count = 0
           }
@@ -66,7 +66,7 @@ run "next_free_suggestions_skip_reserved_head_subnets" {
             cidr_base                  = "10.0.0.4"
             cidr_size                  = 30
             cidr                       = "10.0.0.4/30"
-            cidr_ip_count           = 4
+            cidr_ip_count              = 4
             reservable_subnet_count    = 1
             alignment_skipped_ip_count = 1
           }
@@ -74,7 +74,7 @@ run "next_free_suggestions_skip_reserved_head_subnets" {
             cidr_base                  = "10.0.0.4"
             cidr_size                  = 31
             cidr                       = "10.0.0.4/31"
-            cidr_ip_count           = 2
+            cidr_ip_count              = 2
             reservable_subnet_count    = 2
             alignment_skipped_ip_count = 1
           }
@@ -82,7 +82,7 @@ run "next_free_suggestions_skip_reserved_head_subnets" {
             cidr_base                  = "10.0.0.3"
             cidr_size                  = 32
             cidr                       = "10.0.0.3/32"
-            cidr_ip_count           = 1
+            cidr_ip_count              = 1
             reservable_subnet_count    = 5
             alignment_skipped_ip_count = 0
           }
@@ -117,7 +117,7 @@ run "next_free_suggestions_fragmented_space_across_sizes" {
             cidr_base                  = "10.0.0.4"
             cidr_size                  = 30
             cidr                       = "10.0.0.4/30"
-            cidr_ip_count           = 4
+            cidr_ip_count              = 4
             reservable_subnet_count    = 2
             alignment_skipped_ip_count = 0
           }
@@ -125,7 +125,7 @@ run "next_free_suggestions_fragmented_space_across_sizes" {
             cidr_base                  = "10.0.0.4"
             cidr_size                  = 31
             cidr                       = "10.0.0.4/31"
-            cidr_ip_count           = 2
+            cidr_ip_count              = 2
             reservable_subnet_count    = 4
             alignment_skipped_ip_count = 0
           }
@@ -133,7 +133,7 @@ run "next_free_suggestions_fragmented_space_across_sizes" {
             cidr_base                  = "10.0.0.4"
             cidr_size                  = 32
             cidr                       = "10.0.0.4/32"
-            cidr_ip_count           = 1
+            cidr_ip_count              = 1
             reservable_subnet_count    = 9
             alignment_skipped_ip_count = 0
           }
@@ -162,7 +162,7 @@ run "next_free_suggestions_hide_broader_sizes_than_base" {
             cidr_base                  = "10.0.0.0"
             cidr_size                  = 24
             cidr                       = "10.0.0.0/24"
-            cidr_ip_count           = 256
+            cidr_ip_count              = 256
             reservable_subnet_count    = 1
             alignment_skipped_ip_count = 0
           }
@@ -170,7 +170,7 @@ run "next_free_suggestions_hide_broader_sizes_than_base" {
             cidr_base                  = "10.0.0.0"
             cidr_size                  = 25
             cidr                       = "10.0.0.0/25"
-            cidr_ip_count           = 128
+            cidr_ip_count              = 128
             reservable_subnet_count    = 2
             alignment_skipped_ip_count = 0
           }
@@ -178,7 +178,7 @@ run "next_free_suggestions_hide_broader_sizes_than_base" {
             cidr_base                  = "10.0.0.0"
             cidr_size                  = 26
             cidr                       = "10.0.0.0/26"
-            cidr_ip_count           = 64
+            cidr_ip_count              = 64
             reservable_subnet_count    = 4
             alignment_skipped_ip_count = 0
           }
@@ -229,7 +229,7 @@ run "next_free_suggestions_respect_configurable_count_per_size" {
           cidr_base                  = "10.0.0.0"
           cidr_size                  = 30
           cidr                       = "10.0.0.0/30"
-          cidr_ip_count           = 4
+          cidr_ip_count              = 4
           reservable_subnet_count    = 4
           alignment_skipped_ip_count = 0
         },
@@ -237,7 +237,7 @@ run "next_free_suggestions_respect_configurable_count_per_size" {
           cidr_base                  = "10.0.0.4"
           cidr_size                  = 30
           cidr                       = "10.0.0.4/30"
-          cidr_ip_count           = 4
+          cidr_ip_count              = 4
           reservable_subnet_count    = 4
           alignment_skipped_ip_count = 4
         },
@@ -245,7 +245,7 @@ run "next_free_suggestions_respect_configurable_count_per_size" {
           cidr_base                  = "10.0.0.8"
           cidr_size                  = 30
           cidr                       = "10.0.0.8/30"
-          cidr_ip_count           = 4
+          cidr_ip_count              = 4
           reservable_subnet_count    = 4
           alignment_skipped_ip_count = 8
         }
@@ -255,7 +255,7 @@ run "next_free_suggestions_respect_configurable_count_per_size" {
           cidr_base                  = "10.0.0.0"
           cidr_size                  = 31
           cidr                       = "10.0.0.0/31"
-          cidr_ip_count           = 2
+          cidr_ip_count              = 2
           reservable_subnet_count    = 8
           alignment_skipped_ip_count = 0
         },
@@ -263,7 +263,7 @@ run "next_free_suggestions_respect_configurable_count_per_size" {
           cidr_base                  = "10.0.0.2"
           cidr_size                  = 31
           cidr                       = "10.0.0.2/31"
-          cidr_ip_count           = 2
+          cidr_ip_count              = 2
           reservable_subnet_count    = 8
           alignment_skipped_ip_count = 2
         },
@@ -271,7 +271,7 @@ run "next_free_suggestions_respect_configurable_count_per_size" {
           cidr_base                  = "10.0.0.4"
           cidr_size                  = 31
           cidr                       = "10.0.0.4/31"
-          cidr_ip_count           = 2
+          cidr_ip_count              = 2
           reservable_subnet_count    = 8
           alignment_skipped_ip_count = 4
         }
@@ -281,7 +281,7 @@ run "next_free_suggestions_respect_configurable_count_per_size" {
           cidr_base                  = "10.0.0.0"
           cidr_size                  = 32
           cidr                       = "10.0.0.0/32"
-          cidr_ip_count           = 1
+          cidr_ip_count              = 1
           reservable_subnet_count    = 16
           alignment_skipped_ip_count = 0
         },
@@ -289,7 +289,7 @@ run "next_free_suggestions_respect_configurable_count_per_size" {
           cidr_base                  = "10.0.0.1"
           cidr_size                  = 32
           cidr                       = "10.0.0.1/32"
-          cidr_ip_count           = 1
+          cidr_ip_count              = 1
           reservable_subnet_count    = 16
           alignment_skipped_ip_count = 1
         },
@@ -297,7 +297,7 @@ run "next_free_suggestions_respect_configurable_count_per_size" {
           cidr_base                  = "10.0.0.2"
           cidr_size                  = 32
           cidr                       = "10.0.0.2/32"
-          cidr_ip_count           = 1
+          cidr_ip_count              = 1
           reservable_subnet_count    = 16
           alignment_skipped_ip_count = 2
         }

@@ -16,7 +16,7 @@ run "alignment_skipped_ip_count_is_zero_without_reservations" {
             cidr_base                  = "10.0.0.0"
             cidr_size                  = 30
             cidr                       = "10.0.0.0/30"
-            cidr_ip_count           = 4
+            cidr_ip_count              = 4
             reservable_subnet_count    = 1
             alignment_skipped_ip_count = 0
           }
@@ -24,7 +24,7 @@ run "alignment_skipped_ip_count_is_zero_without_reservations" {
             cidr_base                  = "10.0.0.0"
             cidr_size                  = 31
             cidr                       = "10.0.0.0/31"
-            cidr_ip_count           = 2
+            cidr_ip_count              = 2
             reservable_subnet_count    = 2
             alignment_skipped_ip_count = 0
           }
@@ -32,7 +32,7 @@ run "alignment_skipped_ip_count_is_zero_without_reservations" {
             cidr_base                  = "10.0.0.0"
             cidr_size                  = 32
             cidr                       = "10.0.0.0/32"
-            cidr_ip_count           = 1
+            cidr_ip_count              = 1
             reservable_subnet_count    = 4
             alignment_skipped_ip_count = 0
           }
@@ -66,7 +66,7 @@ run "alignment_skipped_ip_count_counts_only_free_ips_before_first_aligned_subnet
             cidr_base                  = "10.0.0.4"
             cidr_size                  = 30
             cidr                       = "10.0.0.4/30"
-            cidr_ip_count           = 4
+            cidr_ip_count              = 4
             reservable_subnet_count    = 1
             alignment_skipped_ip_count = 2
           }
@@ -74,7 +74,7 @@ run "alignment_skipped_ip_count_counts_only_free_ips_before_first_aligned_subnet
             cidr_base                  = "10.0.0.4"
             cidr_size                  = 31
             cidr                       = "10.0.0.4/31"
-            cidr_ip_count           = 2
+            cidr_ip_count              = 2
             reservable_subnet_count    = 2
             alignment_skipped_ip_count = 2
           }
@@ -82,7 +82,7 @@ run "alignment_skipped_ip_count_counts_only_free_ips_before_first_aligned_subnet
             cidr_base                  = "10.0.0.1"
             cidr_size                  = 32
             cidr                       = "10.0.0.1/32"
-            cidr_ip_count           = 1
+            cidr_ip_count              = 1
             reservable_subnet_count    = 6
             alignment_skipped_ip_count = 0
           }
@@ -111,7 +111,7 @@ run "alignment_skipped_ip_count_large_16_base_network" {
             cidr_base                  = "10.0.0.0"
             cidr_size                  = 16
             cidr                       = "10.0.0.0/16"
-            cidr_ip_count           = 65536
+            cidr_ip_count              = 65536
             reservable_subnet_count    = 1
             alignment_skipped_ip_count = 0
           }
@@ -119,7 +119,7 @@ run "alignment_skipped_ip_count_large_16_base_network" {
             cidr_base                  = "10.0.0.0"
             cidr_size                  = 17
             cidr                       = "10.0.0.0/17"
-            cidr_ip_count           = 32768
+            cidr_ip_count              = 32768
             reservable_subnet_count    = 2
             alignment_skipped_ip_count = 0
           }
@@ -127,7 +127,7 @@ run "alignment_skipped_ip_count_large_16_base_network" {
             cidr_base                  = "10.0.0.0"
             cidr_size                  = 18
             cidr                       = "10.0.0.0/18"
-            cidr_ip_count           = 16384
+            cidr_ip_count              = 16384
             reservable_subnet_count    = 4
             alignment_skipped_ip_count = 0
           }
@@ -135,7 +135,7 @@ run "alignment_skipped_ip_count_large_16_base_network" {
             cidr_base                  = "10.0.0.0"
             cidr_size                  = 19
             cidr                       = "10.0.0.0/19"
-            cidr_ip_count           = 8192
+            cidr_ip_count              = 8192
             reservable_subnet_count    = 8
             alignment_skipped_ip_count = 0
           }
@@ -143,7 +143,7 @@ run "alignment_skipped_ip_count_large_16_base_network" {
             cidr_base                  = "10.0.0.0"
             cidr_size                  = 20
             cidr                       = "10.0.0.0/20"
-            cidr_ip_count           = 4096
+            cidr_ip_count              = 4096
             reservable_subnet_count    = 16
             alignment_skipped_ip_count = 0
           }
@@ -151,7 +151,7 @@ run "alignment_skipped_ip_count_large_16_base_network" {
             cidr_base                  = "10.0.0.0"
             cidr_size                  = 21
             cidr                       = "10.0.0.0/21"
-            cidr_ip_count           = 2048
+            cidr_ip_count              = 2048
             reservable_subnet_count    = 32
             alignment_skipped_ip_count = 0
           }
@@ -159,7 +159,7 @@ run "alignment_skipped_ip_count_large_16_base_network" {
             cidr_base                  = "10.0.0.0"
             cidr_size                  = 22
             cidr                       = "10.0.0.0/22"
-            cidr_ip_count           = 1024
+            cidr_ip_count              = 1024
             reservable_subnet_count    = 64
             alignment_skipped_ip_count = 0
           }
@@ -167,7 +167,7 @@ run "alignment_skipped_ip_count_large_16_base_network" {
             cidr_base                  = "10.0.0.0"
             cidr_size                  = 23
             cidr                       = "10.0.0.0/23"
-            cidr_ip_count           = 512
+            cidr_ip_count              = 512
             reservable_subnet_count    = 128
             alignment_skipped_ip_count = 0
           }
@@ -175,7 +175,7 @@ run "alignment_skipped_ip_count_large_16_base_network" {
             cidr_base                  = "10.0.0.0"
             cidr_size                  = 24
             cidr                       = "10.0.0.0/24"
-            cidr_ip_count           = 256
+            cidr_ip_count              = 256
             reservable_subnet_count    = 256
             alignment_skipped_ip_count = 0
           }
@@ -183,7 +183,7 @@ run "alignment_skipped_ip_count_large_16_base_network" {
             cidr_base                  = "10.0.0.0"
             cidr_size                  = 25
             cidr                       = "10.0.0.0/25"
-            cidr_ip_count           = 128
+            cidr_ip_count              = 128
             reservable_subnet_count    = 512
             alignment_skipped_ip_count = 0
           }
@@ -191,7 +191,7 @@ run "alignment_skipped_ip_count_large_16_base_network" {
             cidr_base                  = "10.0.0.0"
             cidr_size                  = 26
             cidr                       = "10.0.0.0/26"
-            cidr_ip_count           = 64
+            cidr_ip_count              = 64
             reservable_subnet_count    = 1024
             alignment_skipped_ip_count = 0
           }
@@ -199,7 +199,7 @@ run "alignment_skipped_ip_count_large_16_base_network" {
             cidr_base                  = "10.0.0.0"
             cidr_size                  = 27
             cidr                       = "10.0.0.0/27"
-            cidr_ip_count           = 32
+            cidr_ip_count              = 32
             reservable_subnet_count    = 2048
             alignment_skipped_ip_count = 0
           }
@@ -207,7 +207,7 @@ run "alignment_skipped_ip_count_large_16_base_network" {
             cidr_base                  = "10.0.0.0"
             cidr_size                  = 28
             cidr                       = "10.0.0.0/28"
-            cidr_ip_count           = 16
+            cidr_ip_count              = 16
             reservable_subnet_count    = 4096
             alignment_skipped_ip_count = 0
           }
@@ -240,7 +240,7 @@ run "alignment_skipped_ip_count_is_computed_when_32_is_out_of_scope" {
             cidr_base                  = "10.0.0.4"
             cidr_size                  = 30
             cidr                       = "10.0.0.4/30"
-            cidr_ip_count           = 4
+            cidr_ip_count              = 4
             reservable_subnet_count    = 1
             alignment_skipped_ip_count = 2
           }
@@ -248,7 +248,7 @@ run "alignment_skipped_ip_count_is_computed_when_32_is_out_of_scope" {
             cidr_base                  = "10.0.0.2"
             cidr_size                  = 31
             cidr                       = "10.0.0.2/31"
-            cidr_ip_count           = 2
+            cidr_ip_count              = 2
             reservable_subnet_count    = 3
             alignment_skipped_ip_count = 0
           }
