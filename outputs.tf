@@ -1,6 +1,7 @@
 output "subnet_count" {
   description = "Map of CIDR sizes to the number of subnets that can be carved from base_cidr (keys: /<min_prefix> through /<max_prefix>)."
   value       = local.subnet_count
+  sensitive   = true
 
   precondition {
     condition     = local.base_cidr_subnets_enabled
@@ -26,6 +27,7 @@ output "next_free_cidrs" {
 output "reserved" {
   description = "Map of all reservation names to their values (canonical IPv4 CIDR or IP range)."
   value       = var.reserved
+  sensitive   = true
 
   precondition {
     condition     = local.reserved_cidrs_unique
