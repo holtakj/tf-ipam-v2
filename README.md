@@ -42,8 +42,6 @@ This module supports **IPv4 only**.
 | --- | --- | --- |
 | `subnet_count` | `map(number)` | Number of subnets that can be carved from `base_cidr` for each CIDR size key (`"/<min_prefix>"..."/<max_prefix>"`). |
 | `next_free_cidrs` | `map(list(object))` | For each size key (`"/<min_prefix>"..."/<max_prefix>"`), a list (possibly empty) of up to `suggest_count` objects `{ cidr_base, size, cidr, reservable_subnet_count, alignment_skipped_ip_count }`. |
-| `next_free_cidr` | `map(object \| null)` | For each size key (`"/<min_prefix>"..."/<max_prefix>"`), the first next-free suggestion object or `null` when unavailable. Object fields: `{ cidr_base, size, cidr, reservable_subnet_count, alignment_skipped_ip_count }`. |
-| `subnet_usage_by_size` | `map(object)` | Per-size usage object with `{ reservable_subnet_count, reserved_subnet_count, reserved_subnet_percentage }`. |
 | `zzz_graph` | `object` | Terminal-friendly heat-map of IP space usage. Fields: `base_cidr`, `bucket_count`, `bucket_size_ips`, `legend`, `heatmap` (64-char strip). Printed last due to lexicographic output ordering. |
 | `reserved` | `map(string)` | Echo of the reservation map (name -> CIDR or IP range). |
 
@@ -104,14 +102,6 @@ module "ipam" {
     db         = "10.0.16.0/20"
     quarantine = "10.0.24.0-10.0.24.63"  # IP range (not required to align to a CIDR boundary)
   }
-}
-```
-
-### Example: Read first next-free `/24`
-
-```hcl
-output "next_free_24" {
-  value = try(module.ipam.next_free_cidr["/24"], null)
 }
 ```
 

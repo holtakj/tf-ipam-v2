@@ -23,23 +23,6 @@ output "next_free_cidrs" {
   value       = local.next_free_cidr_suggestions_by_size
 }
 
-output "next_free_cidr" {
-  description = "Per-size first next free CIDR keyed from /<min_prefix> to /<max_prefix>. Value is null when unavailable; otherwise an object with fields: cidr_base, size, cidr, reservable_subnet_count, alignment_skipped_ip_count."
-  value       = local.next_free_cidr_suggestion_by_size
-}
-
-output "subnet_usage_by_size" {
-  description = "Per-size subnet usage keyed from /<min_prefix> to /<max_prefix> with fields: reservable_subnet_count, reserved_subnet_count, reserved_subnet_percentage."
-  value = {
-    for cidr_size in local.scoped_cidr_sizes :
-    format("/%d", cidr_size) => {
-      reservable_subnet_count    = local.reservable_subnet_count_by_size[cidr_size]
-      reserved_subnet_count      = local.reserved_subnet_count_by_size[cidr_size]
-      reserved_subnet_percentage = local.reserved_subnet_percentage_by_size[cidr_size]
-    }
-  }
-}
-
 output "reserved" {
   description = "Map of all reservation names to their values (canonical IPv4 CIDR or IP range)."
   value       = var.reserved
@@ -71,7 +54,7 @@ output "zzz_graph" {
     base_cidr       = var.base_cidr
     bucket_count    = local.reservation_heatmap_bucket_count
     bucket_size_ips = local.reservation_heatmap_bucket_size
-    legend          = "_=0%, .=<50%, :=50-99%, #=100%"
+    legend          = "_=0%, ░=0-25%, ▒=25-50%, ▓=50-75%, █=75-100%, #=100%"
     heatmap         = local.reservation_heatmap_strip
   }
 }

@@ -53,14 +53,6 @@ output "capacity_24" {
 }
 ```
 
-## Read First Suggested CIDR for /24
-
-```hcl
-output "next_free_24" {
-  value = try(module.ipam.next_free_cidr["/24"], null)
-}
-```
-
 ## Read Multiple Suggested CIDRs for /24
 
 ```hcl
@@ -79,25 +71,6 @@ output "next_free_24_candidates" {
   reservable_subnet_count    = 200
   alignment_skipped_ip_count = 0
 }
-
-## Read Reserved Usage Percentage by Prefix
-
-```hcl
-output "usage_24" {
-  value = module.ipam.subnet_usage_by_size["/24"]
-}
-```
-
-Expected shape:
-
-```hcl
-{
-  reservable_subnet_count    = 200
-  reserved_subnet_count      = 56
-  reserved_subnet_percentage = 21.875
-}
-```
-```
 
 ## Echoed Reservations
 
@@ -129,8 +102,8 @@ Example output for a `/16` with the lower half reserved:
   base_cidr       = "10.0.0.0/16"
   bucket_count    = 64
   bucket_size_ips = 1024
-  legend          = "_=0%, .=<50%, :=50-99%, #=100%"
-  heatmap         = "################################________________________________"
+  legend          = "_=0%, ░=0-25%, ▒=25-50%, ▓=50-75%, █=75-100%, #=100%"
+  heatmap         = "################################__________________________________"
 }
 ```
 
@@ -138,7 +111,9 @@ Example output for a `/16` with the lower half reserved:
 
 | Char | Meaning |
 |------|---------|
-| `_`  | 0% — free |
-| `.`  | 1–49% — less than half used |
-| `:`  | 50–99% — more than half used |
-| `#`  | 100% — fully reserved |
+| `_`  | 0% — completely free |
+| `░`  | 0-25% — light usage |
+| `▒`  | 25-50% — moderate usage |
+| `▓`  | 50-75% — heavy usage |
+| `█`  | 75-100% — very heavily used |
+| `#`  | 100% — completely reserved |
