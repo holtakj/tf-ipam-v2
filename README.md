@@ -41,7 +41,7 @@ This module supports **IPv4 only**.
 | Name | Type | Description |
 | --- | --- | --- |
 | `subnet_count` | `map(number)` | Number of subnets that can be carved from `base_cidr` for each CIDR size key (`"/<min_prefix>"..."/<max_prefix>"`). |
-| `next_free_cidrs` | `map(list(object))` | For each size key (`"/<min_prefix>"..."/<max_prefix>"`), a list (possibly empty) of up to `suggest_count` objects `{ cidr_base, size, cidr, reservable_subnet_count, alignment_skipped_ip_count }`. |
+| `next_free_cidrs` | `map(list(object))` | For each size key (`"/<min_prefix>"..."/<max_prefix>"`), a list (possibly empty) of up to `suggest_count` objects `{ cidr_base, cidr_size, cidr, cidr_ip_count, reservable_subnet_count, alignment_skipped_ip_count }`. |
 | `zzz_graph` | `object` | Terminal-friendly heat-map of IP space usage. Fields: `base_cidr`, `bucket_count`, `bucket_size_ips`, `legend`, `heatmap` (64-char strip). Printed last due to lexicographic output ordering. |
 | `reserved` | `map(string)` | Echo of the reservation map (name -> CIDR or IP range). |
 

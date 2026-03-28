@@ -376,8 +376,9 @@ locals {
     format("/%d", cidr_size) => [
       for subnet_index in local.selected_free_subnet_indices_by_size[cidr_size] : {
         cidr_base               = split("/", cidrsubnet(var.base_cidr, cidr_size - local.base_prefix_length, subnet_index))[0]
-        size                    = cidr_size
+        cidr_size               = cidr_size
         cidr                    = cidrsubnet(var.base_cidr, cidr_size - local.base_prefix_length, subnet_index)
+        cidr_ip_count           = pow(2, 32 - cidr_size)
         reservable_subnet_count = local.reservable_subnet_count_by_size[cidr_size]
         alignment_skipped_ip_count = sum([
           for free_segment in local.free_ip_segments : max(

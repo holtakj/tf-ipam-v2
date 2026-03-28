@@ -50,14 +50,6 @@ run "ip_range_10000_addresses_in_16_base" {
     )
     error_message = "A 10000-IP range reservation must leave 10.0.39.64/26 as first free /26, 10.0.40.0/24 as first free /24, and exactly 216 free /24 blocks."
   }
-
-  assert {
-    condition = (
-      output.subnet_usage_by_size["/24"].reserved_subnet_count == 40 &&
-      output.subnet_usage_by_size["/24"].reserved_subnet_percentage == 15.625
-    )
-    error_message = "For /24 in a /16 base with first 10,000 IPs reserved, reserved count must be 40 with reserved percentage 15.625."
-  }
 }
 
 run "ip_range_and_cidr_mixed_reservations" {

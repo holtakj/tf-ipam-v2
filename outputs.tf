@@ -19,7 +19,7 @@ output "subnet_count" {
 }
 
 output "next_free_cidrs" {
-  description = "Per-size next free suggestions keyed from /<min_prefix> to /<max_prefix>. Value is a list (possibly empty) of up to suggest_count objects with fields: cidr_base, size, cidr, reservable_subnet_count, alignment_skipped_ip_count."
+  description = "Per-size next free suggestions keyed from /<min_prefix> to /<max_prefix>. Value is a list (possibly empty) of up to suggest_count objects with fields: cidr_base, cidr_size, cidr, cidr_ip_count, reservable_subnet_count, alignment_skipped_ip_count."
   value       = local.next_free_cidr_suggestions_by_size
 }
 

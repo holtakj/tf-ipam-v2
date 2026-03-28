@@ -33,78 +33,89 @@ run "subnet_count_map_for_10_0_0_0_16" {
         {
           "/16" = {
             cidr_base                  = "10.0.0.0"
-            size                       = 16
+            cidr_size                  = 16
             cidr                       = "10.0.0.0/16"
+            cidr_ip_count           = 65536
             reservable_subnet_count    = 1
             alignment_skipped_ip_count = 0
           }
           "/17" = {
             cidr_base                  = "10.0.0.0"
-            size                       = 17
+            cidr_size                  = 17
             cidr                       = "10.0.0.0/17"
+            cidr_ip_count           = 32768
             reservable_subnet_count    = 2
             alignment_skipped_ip_count = 0
           }
           "/18" = {
             cidr_base                  = "10.0.0.0"
-            size                       = 18
+            cidr_size                  = 18
             cidr                       = "10.0.0.0/18"
+            cidr_ip_count           = 16384
             reservable_subnet_count    = 4
             alignment_skipped_ip_count = 0
           }
           "/19" = {
             cidr_base                  = "10.0.0.0"
-            size                       = 19
+            cidr_size                  = 19
             cidr                       = "10.0.0.0/19"
+            cidr_ip_count           = 8192
             reservable_subnet_count    = 8
             alignment_skipped_ip_count = 0
           }
           "/20" = {
             cidr_base                  = "10.0.0.0"
-            size                       = 20
+            cidr_size                  = 20
             cidr                       = "10.0.0.0/20"
+            cidr_ip_count           = 4096
             reservable_subnet_count    = 16
             alignment_skipped_ip_count = 0
           }
           "/21" = {
             cidr_base                  = "10.0.0.0"
-            size                       = 21
+            cidr_size                  = 21
             cidr                       = "10.0.0.0/21"
+            cidr_ip_count           = 2048
             reservable_subnet_count    = 32
             alignment_skipped_ip_count = 0
           }
           "/22" = {
             cidr_base                  = "10.0.0.0"
-            size                       = 22
+            cidr_size                  = 22
             cidr                       = "10.0.0.0/22"
+            cidr_ip_count           = 1024
             reservable_subnet_count    = 64
             alignment_skipped_ip_count = 0
           }
           "/23" = {
             cidr_base                  = "10.0.0.0"
-            size                       = 23
+            cidr_size                  = 23
             cidr                       = "10.0.0.0/23"
+            cidr_ip_count           = 512
             reservable_subnet_count    = 128
             alignment_skipped_ip_count = 0
           }
           "/24" = {
             cidr_base                  = "10.0.0.0"
-            size                       = 24
+            cidr_size                  = 24
             cidr                       = "10.0.0.0/24"
+            cidr_ip_count           = 256
             reservable_subnet_count    = 256
             alignment_skipped_ip_count = 0
           }
           "/25" = {
             cidr_base                  = "10.0.0.0"
-            size                       = 25
+            cidr_size                  = 25
             cidr                       = "10.0.0.0/25"
+            cidr_ip_count           = 128
             reservable_subnet_count    = 512
             alignment_skipped_ip_count = 0
           }
           "/26" = {
             cidr_base                  = "10.0.0.0"
-            size                       = 26
+            cidr_size                  = 26
             cidr                       = "10.0.0.0/26"
+            cidr_ip_count           = 64
             reservable_subnet_count    = 1024
             alignment_skipped_ip_count = 0
           }

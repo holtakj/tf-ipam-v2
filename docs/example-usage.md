@@ -66,8 +66,9 @@ output "next_free_24_candidates" {
 ```hcl
 {
   cidr_base                  = "10.42.8.0"
-  size                       = 24
+  cidr_size                  = 24
   cidr                       = "10.42.8.0/24"
+  cidr_ip_count              = 256
   reservable_subnet_count    = 200
   alignment_skipped_ip_count = 0
 }

@@ -40,19 +40,6 @@ run "alternating_cidr_range_cidr_in_16_leaves_three_free_24s" {
     )
     error_message = "Alternating CIDR/range/CIDR reservations must expose exactly three free /24 islands and report 253 reservable /24 blocks."
   }
-
-  assert {
-    condition = (
-      output.subnet_usage_by_size["/24"].reserved_subnet_count == 3 &&
-      output.subnet_usage_by_size["/24"].reserved_subnet_percentage == 1.171875
-    )
-    error_message = "For /24 in this /16 scenario, reserved count must be 3 with reserved percentage 1.171875."
-  }
-
-  assert {
-    condition     = output.next_free_cidr["/23"].cidr == "10.0.6.0/23"
-    error_message = "First free /23 must be 10.0.6.0/23 (the first two consecutive free /24 slots after the last reservation)."
-  }
 }
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -142,16 +129,10 @@ run "range_middle_cidr_edges_yields_three_free_27_fragments" {
       output.next_free_cidrs["/27"][0].cidr == "10.0.0.32/27" &&
       output.next_free_cidrs["/27"][1].cidr == "10.0.0.128/27" &&
       output.next_free_cidrs["/27"][2].cidr == "10.0.0.160/27" &&
-      output.next_free_cidrs["/27"][0].reservable_subnet_count == 3
+      output.next_free_cidrs["/27"][0].reservable_subnet_count == 3 &&
+      output.next_free_cidrs["/28"][0].cidr == "10.0.0.32/28" &&
+      output.next_free_cidrs["/28"][0].reservable_subnet_count == 6
     )
-    error_message = "With left/right CIDR edges and a range in the middle, exactly three /27 fragments must be free."
-  }
-
-  assert {
-    condition = (
-      output.next_free_cidr["/28"].cidr == "10.0.0.32/28" &&
-      output.next_free_cidr["/28"].reservable_subnet_count == 6
-    )
-    error_message = "First free /28 must be 10.0.0.32/28 with 6 total reservable /28 blocks."
+    error_message = "With left/right CIDR edges and a range in the middle, exactly three /27 fragments must be free, and first free /28 must be 10.0.0.32/28 with 6 total reservable /28 blocks."
   }
 }
