@@ -36,8 +36,8 @@ run "heatmap_half_reserved_in_24_is_half_full_buckets" {
     condition = (
       output.zzz_graph.bucket_count == 64 &&
       output.zzz_graph.bucket_size_ips == 4 &&
-      output.zzz_graph.heatmap == format("%s%s", join("", [for i in range(32) : "#"]), join("", [for i in range(32) : " "]))
+      output.zzz_graph.heatmap == format("%s%s", join("", [for i in range(32) : "█"]), join("", [for i in range(32) : " "]))
     )
-    error_message = "With the first /25 reserved in a /24 base, the heatmap must show 32 full buckets ('#') then 32 free buckets (' ')."
+    error_message = "With the first /25 reserved in a /24 base, the heatmap must show 32 full buckets ('█') then 32 free buckets (' ')."
   }
 }

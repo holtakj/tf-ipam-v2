@@ -327,8 +327,6 @@ locals {
       shade = (
         local.reservation_heatmap_reserved_ips_by_bucket[bucket.bucket_index] == 0
         ? " "
-        : local.reservation_heatmap_reserved_ips_by_bucket[bucket.bucket_index] == (bucket.end_int - bucket.start_int + 1)
-        ? "#"
         : (100 * local.reservation_heatmap_reserved_ips_by_bucket[bucket.bucket_index] / (bucket.end_int - bucket.start_int + 1)) <= 33
         ? "░"
         : (100 * local.reservation_heatmap_reserved_ips_by_bucket[bucket.bucket_index] / (bucket.end_int - bucket.start_int + 1)) <= 66
