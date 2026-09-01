@@ -273,18 +273,23 @@ locals {
     )
   }
 
-  # Reservation heat-map for terminal-friendly visualization.
-  # We divide the base CIDR into fixed-count buckets and compute per-bucket
-  # reserved density based on IP overlap against reservation blockers.
+  # Reservation heat-map for terminal-friendly visualization. Use one dot per
+  # IP through /16, then scale each dot for larger networks.
   reservation_heatmap_total_ips = local.base_end_int - local.base_start_int + 1
   reservation_heatmap_bucket_count = min(
-    64,
+    65536,
     max(1, floor(local.reservation_heatmap_total_ips))
   )
   reservation_heatmap_bucket_size = ceil(local.reservation_heatmap_total_ips / local.reservation_heatmap_bucket_count)
+  reservation_heatmap_bucket_indices = flatten([
+    for batch_index in range(ceil(local.reservation_heatmap_bucket_count / 1024)) : range(
+      batch_index * 1024,
+      min((batch_index + 1) * 1024, local.reservation_heatmap_bucket_count)
+    )
+  ])
 
   reservation_heatmap_bucket_ranges = [
-    for bucket_index in range(local.reservation_heatmap_bucket_count) : {
+    for bucket_index in local.reservation_heatmap_bucket_indices : {
       bucket_index = bucket_index
       start_offset = bucket_index * local.reservation_heatmap_bucket_size
       end_offset = min(
@@ -312,6 +317,10 @@ locals {
     )
   ]
 
+  reservation_heatmap_usage_percent = floor(
+    100000 * 100 * sum(local.reservation_heatmap_reserved_ips_by_bucket) / local.reservation_heatmap_total_ips + 0.5
+  ) / 100000
+
   reservation_heatmap_buckets = [
     for bucket in local.reservation_heatmap_bucket_ranges : {
       bucket_index = bucket.bucket_index
@@ -324,19 +333,32 @@ locals {
         ? 0
         : 100 * local.reservation_heatmap_reserved_ips_by_bucket[bucket.bucket_index] / (bucket.end_int - bucket.start_int + 1)
       )
-      shade = (
-        local.reservation_heatmap_reserved_ips_by_bucket[bucket.bucket_index] == 0
-        ? "░"
-        : (100 * local.reservation_heatmap_reserved_ips_by_bucket[bucket.bucket_index] / (bucket.end_int - bucket.start_int + 1)) <= 50
-        ? "▒"
-        : (100 * local.reservation_heatmap_reserved_ips_by_bucket[bucket.bucket_index] / (bucket.end_int - bucket.start_int + 1)) < 100
-        ? "▓"
-        : "█"
-      )
     }
   ]
 
-  reservation_heatmap_strip = join("", [for bucket in local.reservation_heatmap_buckets : bucket.shade])
+  reservation_heatmap_braille_values = [
+    for character_index in flatten([
+      for batch_index in range(ceil(ceil(local.reservation_heatmap_bucket_count / 8) / 1024)) : range(
+        batch_index * 1024,
+        min((batch_index + 1) * 1024, ceil(local.reservation_heatmap_bucket_count / 8))
+      )
+    ]) : sum([
+      for dot_index in range(8) : (
+        character_index * 8 + dot_index < local.reservation_heatmap_bucket_count &&
+        local.reservation_heatmap_reserved_ips_by_bucket[character_index * 8 + dot_index] > 0
+        ? pow(2, dot_index)
+        : 0
+      )
+    ])
+  ]
+
+  reservation_heatmap_strip = format("\n%s\n", join("\n", [
+    for row_index, braille_row in chunklist(local.reservation_heatmap_braille_values, 128) : format("%-15s|%s| %-15s",
+      local.reservation_heatmap_buckets[row_index * 128 * 8].start_ip,
+      join("", [for braille_value in braille_row : local.ip_octet_braille[braille_value]]),
+      local.reservation_heatmap_buckets[min((row_index + 1) * 128 * 8, local.reservation_heatmap_bucket_count) - 1].end_ip
+    )
+  ]))
 
   # Build candidate indices per CIDR size from each free interval.
   # We keep at most suggest_count indices per interval, then slice globally per size.

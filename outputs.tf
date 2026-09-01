@@ -53,10 +53,24 @@ output "reserved" {
 output "zzz_graph" {
   description = "Terminal-friendly reservation heat-map and bucket detail. Intentionally named to print last in Terraform output listings."
   value = {
-    base_cidr       = var.base_cidr
-    bucket_count    = local.reservation_heatmap_bucket_count
-    bucket_size_ips = local.reservation_heatmap_bucket_size
-    legend          = "░=0%, ▒=1-50%, ▓=51-99%, █=100%"
-    heatmap         = local.reservation_heatmap_strip
+    base_cidr      = var.base_cidr
+    total_ip_count = local.reservation_heatmap_total_ips
+    ips_per_dot   = local.reservation_heatmap_bucket_size
+    usage_percent  = local.reservation_heatmap_usage_percent
+    legend         = "Dots represent reserved IP buckets, ordered bottom-to-top and left-to-right. If ips_per_dot > 1, each dot represents up to that many IPs."
+    heatmap        = local.reservation_heatmap_strip
   }
 }
+
+# used for debugging the Braille character mapping, but not part of the public interface
+# output "debug_braille" {
+#   description = "Braille characters ordered by their IPv4 octet index."
+#   value = [
+#     for index in range(256) : {
+#       index       = index
+#       binary      = format("%08b", index)
+#       hexadecimal = format("%02X", index)
+#       braille     = local.ip_octet_braille[index]
+#     }
+#   ]
+# }
