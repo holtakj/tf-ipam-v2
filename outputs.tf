@@ -65,7 +65,7 @@ output "zzz_graph" {
 output "network_report_markdown" {
   description = "Markdown report summarizing network capacity, reservations, the heat-map, and next-free CIDR suggestions."
   value = join("\n", concat([
-    "# IPAM Network Report",
+    "# TF-IPAM Network report",
     "",
     format("- **Base CIDR:** `%s`", var.base_cidr),
     format("- **Prefix range:** `/%d` to `/%d`", var.min_prefix, var.max_prefix),

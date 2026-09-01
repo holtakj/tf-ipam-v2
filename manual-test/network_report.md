@@ -1,4 +1,4 @@
-# IPAM Network Report
+# TF-IPAM Netowrk report
 
 - **Base CIDR:** `10.0.0.0/15`
 - **Prefix range:** `/24` to `/32`

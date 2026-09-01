@@ -76,7 +76,7 @@ run "output_contracts_without_reserved" {
 
   assert {
     condition = (
-      strcontains(output.network_report_markdown, "# IPAM Network Report") &&
+      strcontains(output.network_report_markdown, "# TF-IPAM Network report") &&
       strcontains(output.network_report_markdown, "- **IPs per heat-map dot:** 1") &&
       strcontains(output.network_report_markdown, "```text") &&
       strcontains(output.network_report_markdown, "| 4 | 0 | 4 | 0.00000% |") &&
