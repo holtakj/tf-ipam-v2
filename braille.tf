@@ -1,27 +1,36 @@
 locals {
-  ip_octet_braille_characters = split("", join("", [
-    base64decode("4qCA4qCB4qCC4qCD4qCE4qCF4qCG4qCH4qCI4qCJ4qCK4qCL4qCM4qCN4qCO4qCP4qCQ4qCR4qCS4qCT"),
-    base64decode("4qCU4qCV4qCW4qCX4qCY4qCZ4qCa4qCb4qCc4qCd4qCe4qCf4qCg4qCh4qCi4qCj4qCk4qCl4qCm4qCn"),
-    base64decode("4qCo4qCp4qCq4qCr4qCs4qCt4qCu4qCv4qCw4qCx4qCy4qCz4qC04qC14qC24qC34qC44qC54qC64qC7"),
-    base64decode("4qC84qC94qC+4qC/4qGA4qGB4qGC4qGD4qGE4qGF4qGG4qGH4qGI4qGJ4qGK4qGL4qGM4qGN4qGO4qGP"),
-    base64decode("4qGQ4qGR4qGS4qGT4qGU4qGV4qGW4qGX4qGY4qGZ4qGa4qGb4qGc4qGd4qGe4qGf4qGg4qGh4qGi4qGj"),
-    base64decode("4qGk4qGl4qGm4qGn4qGo4qGp4qGq4qGr4qGs4qGt4qGu4qGv4qGw4qGx4qGy4qGz4qG04qG14qG24qG3"),
-    base64decode("4qG44qG54qG64qG74qG84qG94qG+4qG/4qKA4qKB4qKC4qKD4qKE4qKF4qKG4qKH4qKI4qKJ4qKK4qKL"),
-    base64decode("4qKM4qKN4qKO4qKP4qKQ4qKR4qKS4qKT4qKU4qKV4qKW4qKX4qKY4qKZ4qKa4qKb4qKc4qKd4qKe4qKf"),
-    base64decode("4qKg4qKh4qKi4qKj4qKk4qKl4qKm4qKn4qKo4qKp4qKq4qKr4qKs4qKt4qKu4qKv4qKw4qKx4qKy4qKz"),
-    base64decode("4qK04qK14qK24qK34qK44qK54qK64qK74qK84qK94qK+4qK/4qOA4qOB4qOC4qOD4qOE4qOF4qOG4qOH"),
-    base64decode("4qOI4qOJ4qOK4qOL4qOM4qON4qOO4qOP4qOQ4qOR4qOS4qOT4qOU4qOV4qOW4qOX4qOY4qOZ4qOa4qOb"),
-    base64decode("4qOc4qOd4qOe4qOf4qOg4qOh4qOi4qOj4qOk4qOl4qOm4qOn4qOo4qOp4qOq4qOr4qOs4qOt4qOu4qOv4qOw4qOx4qOy4qOz"),
-    base64decode("4qO04qO14qO24qO34qO44qO54qO64qO74qO84qO94qO+4qO/")
-  ]))
-
-  # Octet bits map bottom-to-top, left-to-right; Braille dots use Unicode's dot positions.
-  ip_octet_braille_dot_order = [6, 7, 2, 5, 1, 4, 0, 3]
-
   ip_octet_braille = {
-    for octet in range(256) : octet => local.ip_octet_braille_characters[sum([
-      for bit, braille_dot in local.ip_octet_braille_dot_order :
-      (floor(octet / pow(2, bit)) % 2) * pow(2, braille_dot)
-    ])]
+    0 = "⠀", 1 = "⡀", 2 = "⢀", 3 = "⣀", 4 = "⠄", 5 = "⡄", 6 = "⢄", 7 = "⣄"
+    8 = "⠠", 9 = "⡠", 10 = "⢠", 11 = "⣠", 12 = "⠤", 13 = "⡤", 14 = "⢤", 15 = "⣤"
+    16 = "⠂", 17 = "⡂", 18 = "⢂", 19 = "⣂", 20 = "⠆", 21 = "⡆", 22 = "⢆", 23 = "⣆"
+    24 = "⠢", 25 = "⡢", 26 = "⢢", 27 = "⣢", 28 = "⠦", 29 = "⡦", 30 = "⢦", 31 = "⣦"
+    32 = "⠐", 33 = "⡐", 34 = "⢐", 35 = "⣐", 36 = "⠔", 37 = "⡔", 38 = "⢔", 39 = "⣔"
+    40 = "⠰", 41 = "⡰", 42 = "⢰", 43 = "⣰", 44 = "⠴", 45 = "⡴", 46 = "⢴", 47 = "⣴"
+    48 = "⠒", 49 = "⡒", 50 = "⢒", 51 = "⣒", 52 = "⠖", 53 = "⡖", 54 = "⢖", 55 = "⣖"
+    56 = "⠲", 57 = "⡲", 58 = "⢲", 59 = "⣲", 60 = "⠶", 61 = "⡶", 62 = "⢶", 63 = "⣶"
+    64 = "⠁", 65 = "⡁", 66 = "⢁", 67 = "⣁", 68 = "⠅", 69 = "⡅", 70 = "⢅", 71 = "⣅"
+    72 = "⠡", 73 = "⡡", 74 = "⢡", 75 = "⣡", 76 = "⠥", 77 = "⡥", 78 = "⢥", 79 = "⣥"
+    80 = "⠃", 81 = "⡃", 82 = "⢃", 83 = "⣃", 84 = "⠇", 85 = "⡇", 86 = "⢇", 87 = "⣇"
+    88 = "⠣", 89 = "⡣", 90 = "⢣", 91 = "⣣", 92 = "⠧", 93 = "⡧", 94 = "⢧", 95 = "⣧"
+    96 = "⠑", 97 = "⡑", 98 = "⢑", 99 = "⣑", 100 = "⠕", 101 = "⡕", 102 = "⢕", 103 = "⣕"
+    104 = "⠱", 105 = "⡱", 106 = "⢱", 107 = "⣱", 108 = "⠵", 109 = "⡵", 110 = "⢵", 111 = "⣵"
+    112 = "⠓", 113 = "⡓", 114 = "⢓", 115 = "⣓", 116 = "⠗", 117 = "⡗", 118 = "⢗", 119 = "⣗"
+    120 = "⠳", 121 = "⡳", 122 = "⢳", 123 = "⣳", 124 = "⠷", 125 = "⡷", 126 = "⢷", 127 = "⣷"
+    128 = "⠈", 129 = "⡈", 130 = "⢈", 131 = "⣈", 132 = "⠌", 133 = "⡌", 134 = "⢌", 135 = "⣌"
+    136 = "⠨", 137 = "⡨", 138 = "⢨", 139 = "⣨", 140 = "⠬", 141 = "⡬", 142 = "⢬", 143 = "⣬"
+    144 = "⠊", 145 = "⡊", 146 = "⢊", 147 = "⣊", 148 = "⠎", 149 = "⡎", 150 = "⢎", 151 = "⣎"
+    152 = "⠪", 153 = "⡪", 154 = "⢪", 155 = "⣪", 156 = "⠮", 157 = "⡮", 158 = "⢮", 159 = "⣮"
+    160 = "⠘", 161 = "⡘", 162 = "⢘", 163 = "⣘", 164 = "⠜", 165 = "⡜", 166 = "⢜", 167 = "⣜"
+    168 = "⠸", 169 = "⡸", 170 = "⢸", 171 = "⣸", 172 = "⠼", 173 = "⡼", 174 = "⢼", 175 = "⣼"
+    176 = "⠚", 177 = "⡚", 178 = "⢚", 179 = "⣚", 180 = "⠞", 181 = "⡞", 182 = "⢞", 183 = "⣞"
+    184 = "⠺", 185 = "⡺", 186 = "⢺", 187 = "⣺", 188 = "⠾", 189 = "⡾", 190 = "⢾", 191 = "⣾"
+    192 = "⠉", 193 = "⡉", 194 = "⢉", 195 = "⣉", 196 = "⠍", 197 = "⡍", 198 = "⢍", 199 = "⣍"
+    200 = "⠩", 201 = "⡩", 202 = "⢩", 203 = "⣩", 204 = "⠭", 205 = "⡭", 206 = "⢭", 207 = "⣭"
+    208 = "⠋", 209 = "⡋", 210 = "⢋", 211 = "⣋", 212 = "⠏", 213 = "⡏", 214 = "⢏", 215 = "⣏"
+    216 = "⠫", 217 = "⡫", 218 = "⢫", 219 = "⣫", 220 = "⠯", 221 = "⡯", 222 = "⢯", 223 = "⣯"
+    224 = "⠙", 225 = "⡙", 226 = "⢙", 227 = "⣙", 228 = "⠝", 229 = "⡝", 230 = "⢝", 231 = "⣝"
+    232 = "⠹", 233 = "⡹", 234 = "⢹", 235 = "⣹", 236 = "⠽", 237 = "⡽", 238 = "⢽", 239 = "⣽"
+    240 = "⠛", 241 = "⡛", 242 = "⢛", 243 = "⣛", 244 = "⠟", 245 = "⡟", 246 = "⢟", 247 = "⣟"
+    248 = "⠻", 249 = "⡻", 250 = "⢻", 251 = "⣻", 252 = "⠿", 253 = "⡿", 254 = "⢿", 255 = "⣿"
   }
 }
