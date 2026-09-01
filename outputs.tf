@@ -55,7 +55,7 @@ output "zzz_graph" {
   value = {
     base_cidr      = var.base_cidr
     total_ip_count = local.reservation_heatmap_total_ips
-    ips_per_dot   = local.reservation_heatmap_bucket_size
+    ips_per_dot    = local.reservation_heatmap_bucket_size
     usage_percent  = local.reservation_heatmap_usage_percent
     legend         = "Dots represent reserved IPs, ordered bottom-to-top and left-to-right. If ips_per_dot > 1, each dot represents up to that many IPs."
     heatmap        = local.reservation_heatmap_strip
@@ -97,29 +97,29 @@ output "network_report_markdown" {
     "",
     "| Prefix | CIDR | Free IPs | Available subnets |",
     "| --- | --- | ---: | ---: |"
-  ], flatten([
-    for cidr_size in local.scoped_cidr_sizes : length(local.next_free_cidr_suggestions_by_size[format("/%d", cidr_size)]) > 0 ? [
-      for suggestion in local.next_free_cidr_suggestions_by_size[format("/%d", cidr_size)] : format(
-        "| `/%d` | `%s` | %d | %d |",
-        cidr_size,
-        suggestion.cidr,
-        suggestion.cidr_ip_count,
-        suggestion.reservable_subnet_count
-      )
-    ] : [format("| `/%d` | None | 0 | 0 |", cidr_size)]
-  ]), [
+    ], flatten([
+      for cidr_size in local.scoped_cidr_sizes : length(local.next_free_cidr_suggestions_by_size[format("/%d", cidr_size)]) > 0 ? [
+        for suggestion in local.next_free_cidr_suggestions_by_size[format("/%d", cidr_size)] : format(
+          "| `/%d` | `%s` | %d | %d |",
+          cidr_size,
+          suggestion.cidr,
+          suggestion.cidr_ip_count,
+          suggestion.reservable_subnet_count
+        )
+      ] : [format("| `/%d` | None | 0 | 0 |", cidr_size)]
+    ]), [
     "",
     "## Reservations",
     "",
     "| Name | CIDR or IP range |",
     "| --- | --- |"
-  ], length(var.reserved) > 0 ? [
+    ], length(var.reserved) > 0 ? [
     for reservation_name in sort(keys(var.reserved)) : format(
       "| `%s` | `%s` |",
       reservation_name,
       var.reserved[reservation_name]
     )
-  ] : [
+    ] : [
     "| None | - |"
   ]))
 }

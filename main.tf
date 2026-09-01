@@ -299,7 +299,7 @@ locals {
         for character_index in range(
           floor(bucket_range.first_bucket_index / 8) + (batch_index * 1024),
           min(floor(bucket_range.first_bucket_index / 8) + ((batch_index + 1) * 1024), floor(bucket_range.last_bucket_index / 8) + 1)
-        ) : {
+          ) : {
           character_index = character_index
           braille_value = pow(2, min(7, bucket_range.last_bucket_index - (character_index * 8)) + 1) - pow(
             2,

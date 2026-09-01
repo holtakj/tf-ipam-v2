@@ -10,12 +10,12 @@ run "heatmap_without_reservations_is_all_free" {
   assert {
     condition = (
       output.zzz_graph.base_cidr == "10.0.0.0/24" &&
-        output.zzz_graph.total_ip_count == 256 &&
-        output.zzz_graph.ips_per_dot == 1 &&
-        output.zzz_graph.usage_percent == 0 &&
-        output.zzz_graph.heatmap == format("\n%-15s|%s| %-15s\n", "10.0.0.0", join("", [for i in range(32) : "⠀"]), "10.0.0.255")
+      output.zzz_graph.total_ip_count == 256 &&
+      output.zzz_graph.ips_per_dot == 1 &&
+      output.zzz_graph.usage_percent == 0 &&
+      output.zzz_graph.heatmap == format("\n%-15s|%s| %-15s\n", "10.0.0.0", join("", [for i in range(32) : "⠀"]), "10.0.0.255")
     )
-      error_message = "Without reservations in a /24 base, the heatmap must have 32 empty Braille characters."
+    error_message = "Without reservations in a /24 base, the heatmap must have 32 empty Braille characters."
   }
 }
 
@@ -40,7 +40,7 @@ run "heatmap_half_reserved_in_24_is_half_full_buckets" {
       output.zzz_graph.usage_percent == 50 &&
       output.zzz_graph.heatmap == format("\n%-15s|%s%s| %-15s\n", "10.0.0.0", join("", [for i in range(16) : "⣿"]), join("", [for i in range(16) : "⠀"]), "10.0.0.255")
     )
-     error_message = "With the first /25 reserved in a /24 base, the heatmap must show 16 full Braille characters then 16 empty ones."
+    error_message = "With the first /25 reserved in a /24 base, the heatmap must show 16 full Braille characters then 16 empty ones."
   }
 }
 
