@@ -1,6 +1,9 @@
 locals {
 
-  reserved_cidrs = values(var.reserved)
+  reserved_cidrs = [
+    for reservation in values(var.reserved) :
+    can(cidrhost(format("%s/32", reservation), 0)) ? format("%s/32", reservation) : reservation
+  ]
 
   # Reservation names are metadata only; uniqueness is enforced on CIDR values.
   reserved_cidrs_unique = length(distinct(local.reserved_cidrs)) == length(local.reserved_cidrs)
