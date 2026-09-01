@@ -88,7 +88,7 @@ exactly as supplied in the `reserved` input.
 ## Heat-map Graph
 
 The `zzz_graph` output provides a Braille heat-map of the base CIDR's IP space,
-printed last in `terraform output` listings. Each line has up to 128 Braille
+printed last in `terraform output` listings. Each line has up to 64 Braille
 characters, enclosed by `|` and labeled with its first and last represented IP.
 Each IP label uses a fixed 15-character field for column alignment.
 `ips_per_dot` remains `1` through `/18` and increases for larger networks, so

@@ -329,12 +329,23 @@ locals {
   ]
 
   reservation_heatmap_strip = format("\n%s\n", join("\n", [
-    for row_index, braille_row in chunklist(local.reservation_heatmap_braille_values, 128) : format("%-15s|%s| %-15s",
-      cidrhost(var.base_cidr, row_index * 128 * 8 * local.reservation_heatmap_bucket_size),
+    for row_index, braille_row in chunklist(local.reservation_heatmap_braille_values, 64) : format("%-15s|%s| %-15s",
+      cidrhost(var.base_cidr, row_index * 64 * 8 * local.reservation_heatmap_bucket_size),
       join("", [for braille_value in braille_row : local.ip_octet_braille[braille_value]]),
       cidrhost(var.base_cidr, min(
         local.reservation_heatmap_total_ips - 1,
-        ((row_index + 1) * 128 * 8 * local.reservation_heatmap_bucket_size) - 1
+        ((row_index + 1) * 64 * 8 * local.reservation_heatmap_bucket_size) - 1
+      ))
+    )
+  ]))
+
+  reservation_heatmap_markdown_strip = format("\n%s\n", join("\n", [
+    for row_index, braille_row in chunklist(local.reservation_heatmap_braille_values, 64) : format("%-15s|%s| %-15s",
+      cidrhost(var.base_cidr, row_index * 64 * 8 * local.reservation_heatmap_bucket_size),
+      join("", [for braille_value in braille_row : local.ip_octet_braille[braille_value]]),
+      cidrhost(var.base_cidr, min(
+        local.reservation_heatmap_total_ips - 1,
+        ((row_index + 1) * 64 * 8 * local.reservation_heatmap_bucket_size) - 1
       ))
     )
   ]))

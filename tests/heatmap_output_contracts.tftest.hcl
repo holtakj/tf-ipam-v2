@@ -85,9 +85,9 @@ run "heatmap_uses_one_ip_per_dot_in_21" {
     condition = (
       output.zzz_graph.total_ip_count == 2048 &&
       output.zzz_graph.ips_per_dot == 1 &&
-      output.zzz_graph.heatmap == format("\n%-15s|%s%s| %-15s\n%-15s|%s| %-15s\n", "10.0.0.0", "⡀", join("", [for i in range(127) : "⠀"]), "10.0.3.255", "10.0.4.0", join("", [for i in range(128) : "⠀"]), "10.0.7.255")
+      output.zzz_graph.heatmap == format("\n%-15s|%s%s| %-15s\n%-15s|%s| %-15s\n%-15s|%s| %-15s\n%-15s|%s| %-15s\n", "10.0.0.0", "⡀", join("", [for i in range(63) : "⠀"]), "10.0.1.255", "10.0.2.0", join("", [for i in range(64) : "⠀"]), "10.0.3.255", "10.0.4.0", join("", [for i in range(64) : "⠀"]), "10.0.5.255", "10.0.6.0", join("", [for i in range(64) : "⠀"]), "10.0.7.255")
     )
-    error_message = "A /21 heatmap must assign one IP per Braille dot across two 128-character rows."
+    error_message = "A /21 heatmap must assign one IP per Braille dot across four 64-character rows."
   }
 }
 

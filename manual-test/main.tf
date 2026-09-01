@@ -30,7 +30,17 @@ output "zzz_graph" {
   value = module.ipam.zzz_graph
 }
 
+output "network_report_markdown" {
+  value = module.ipam.network_report_markdown
+}
+
 # debug
 # output "debug_braille" {
 #   value = module.ipam.debug_braille
 # }
+
+#write the mardown report to a file for easy viewing
+resource "local_file" "network_report_markdown" {
+  content  = module.ipam.network_report_markdown
+  filename = "network_report.md"
+}

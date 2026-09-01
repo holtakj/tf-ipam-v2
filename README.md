@@ -42,7 +42,8 @@ This module supports **IPv4 only**.
 | --- | --- | --- |
 | `subnet_count` | `map(number)` | Number of subnets that can be carved from `base_cidr` for each CIDR size key (`"/<min_prefix>"..."/<max_prefix>"`). |
 | `next_free_cidrs` | `map(list(object))` | For each size key (`"/<min_prefix>"..."/<max_prefix>"`), a list (possibly empty) of up to `suggest_count` objects `{ cidr_base, cidr_size, cidr, cidr_ip_count, reservable_subnet_count, alignment_skipped_ip_count }`. |
-| `zzz_graph` | `object` | Terminal-friendly Braille heat-map of IP space usage. Fields: `base_cidr`, `total_ip_count`, `ips_per_dot`, `usage_percent`, `legend`, `heatmap` (up to 128 Braille characters per labeled line). Printed last due to lexicographic output ordering. |
+| `zzz_graph` | `object` | Terminal-friendly Braille heat-map of IP space usage. Fields: `base_cidr`, `total_ip_count`, `ips_per_dot`, `usage_percent`, `legend`, `heatmap` (up to 64 Braille characters per labeled line). Printed last due to lexicographic output ordering. |
+| `network_report_markdown` | `string` | Markdown report with capacity, utilization, the Braille heat-map, and next-free CIDR suggestions. |
 | `reserved` | `map(string)` | Echo of the reservation map (name -> CIDR or IP range). |
 
 ## Validation Rules
