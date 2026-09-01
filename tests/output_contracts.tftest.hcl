@@ -73,6 +73,17 @@ run "output_contracts_without_reserved" {
     })
     error_message = "next_free_cidrs must return up to suggest_count suggestions per prefix."
   }
+
+  assert {
+    condition = (
+      strcontains(output.network_report_markdown, "# TF-IPAM Network report") &&
+      strcontains(output.network_report_markdown, "- **IPs per heat-map dot:** 1") &&
+      strcontains(output.network_report_markdown, "```text") &&
+      strcontains(output.network_report_markdown, "| 4 | 0 | 4 | 0.00000% |") &&
+      strcontains(output.network_report_markdown, "| `/30` | `10.0.0.0/30` | 4 | 1 |")
+    )
+    error_message = "network_report_markdown must include the network overview, capacity, and next-free CIDR details."
+  }
 }
 
 run "output_contracts_when_no_capacity_left" {
@@ -104,5 +115,14 @@ run "output_contracts_when_no_capacity_left" {
       upper_half = "10.0.0.2/31"
     })
     error_message = "reserved must echo the reservation name-to-cidr map."
+  }
+
+  assert {
+    condition = (
+      strcontains(output.network_report_markdown, "## Reservations") &&
+      strcontains(output.network_report_markdown, "| `lower_half` | `10.0.0.0/31` |") &&
+      endswith(output.network_report_markdown, "| `upper_half` | `10.0.0.2/31` |")
+    )
+    error_message = "network_report_markdown must end with configured reservations."
   }
 }

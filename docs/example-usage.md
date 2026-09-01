@@ -87,8 +87,12 @@ exactly as supplied in the `reserved` input.
 
 ## Heat-map Graph
 
-The `zzz_graph` output provides a 64-character ASCII heat-map of the base CIDR's
-IP space, printed last in `terraform output` listings.
+The `zzz_graph` output provides a Braille heat-map of the base CIDR's IP space,
+printed last in `terraform output` listings. Each line has up to 64 Braille
+characters, enclosed by `|` and labeled with its first and last represented IP.
+Each IP label uses a fixed 15-character field for column alignment.
+`ips_per_dot` remains `1` through `/18` and increases for larger networks, so
+the graph never renders more than 16,384 dots (16 labeled rows).
 
 ```hcl
 output "graph" {
@@ -96,24 +100,15 @@ output "graph" {
 }
 ```
 
-Example output for a `/16` with the lower half reserved:
+Example output for a `/24` with the lower half reserved:
 
 ```
 {
-  base_cidr       = "10.0.0.0/16"
-  bucket_count    = 64
-  bucket_size_ips = 1024
-  legend          = "O=0%, ░=1-33%, ▒=34-66%, ▓=67-99%, █=100%"
-  heatmap         = "████████████████████████████████OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO"
+  base_cidr      = "10.0.0.0/24"
+  total_ip_count = 256
+  ips_per_dot    = 1
+  usage_percent  = 50
+  legend         = "Dots represent reserved IP buckets, ordered bottom-to-top and left-to-right. If ips_per_dot > 1, each dot represents up to that many IPs."
+  heatmap        = "\n10.0.0.0       |⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀| 10.0.0.255    \n"
 }
 ```
-
-**Shade legend:**
-
-| Char | Meaning |
-|------|---------|
-| `O`  | 0% — completely free |
-| `░`  | 1-33% — light usage |
-| `▒`  | 34-66% — moderate usage |
-| `▓`  | 67-99% — heavy usage |
-| `█`  | 100% — completely reserved |

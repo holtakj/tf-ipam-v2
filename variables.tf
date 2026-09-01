@@ -36,7 +36,7 @@ variable "max_prefix" {
 }
 
 variable "reserved" {
-  description = "Stable reservation map keyed by reservation name. Reservation names must be unique. Values may be a canonical IPv4 CIDR (e.g. 10.0.0.0/24) or an IP range in start-end notation (e.g. 10.0.1.0-10.0.1.255)."
+  description = "Stable reservation map keyed by reservation name. Reservation names must be unique. Values may be a canonical IPv4 CIDR (e.g. 10.0.0.0/24), an IPv4 address (treated as /32), or an IP range in start-end notation (e.g. 10.0.1.0-10.0.1.255)."
   type        = map(string)
   default     = {}
 
@@ -49,13 +49,16 @@ variable "reserved" {
           can(cidrnetmask(reservation_value)) &&
           try(reservation_value == format("%s/%d", cidrhost(reservation_value, 0), tonumber(split("/", reservation_value)[1])), false)
           ) || (
+          can(regex("^([0-9]{1,3}\\.){3}[0-9]{1,3}$", reservation_value)) &&
+          can(cidrhost(format("%s/32", reservation_value), 0))
+          ) || (
           can(regex("^([0-9]{1,3}\\.){3}[0-9]{1,3}-([0-9]{1,3}\\.){3}[0-9]{1,3}$", reservation_value)) &&
           can(cidrhost(format("%s/32", split("-", reservation_value)[0]), 0)) &&
           can(cidrhost(format("%s/32", split("-", reservation_value)[1]), 0))
         )
       )
     ])
-    error_message = "Each reserved entry must have a non-empty key and a value that is either a canonical IPv4 CIDR (e.g. 10.0.0.0/24, host bits must be zero) or an IP range (e.g. 10.0.1.0-10.0.1.255). IPv6 is not supported."
+    error_message = "Each reserved entry must have a non-empty key and a value that is either a canonical IPv4 CIDR (e.g. 10.0.0.0/24, host bits must be zero), an IPv4 address (treated as /32), or an IP range (e.g. 10.0.1.0-10.0.1.255). IPv6 is not supported."
   }
 }
 

@@ -158,22 +158,28 @@ run "invalid_base_ipv4_mapped_ipv6_fails" {
   ]
 }
 
-run "invalid_reservation_missing_prefix_fails" {
+run "bare_ip_reservation_is_treated_as_32" {
   command = plan
 
   variables {
     base_cidr  = "10.0.0.0/24"
     min_prefix = 24
-    max_prefix = 24
+    max_prefix = 32
 
     reserved = {
-      bad = "10.0.0.10"
+      host = "10.0.0.10"
     }
   }
 
-  expect_failures = [
-    var.reserved,
-  ]
+  assert {
+    condition     = output.next_free_cidrs["/32"][0].cidr == "10.0.0.0/32"
+    error_message = "A bare reservation address must be treated as a /32 host reservation and excluded from host suggestions."
+  }
+
+  assert {
+    condition     = output.reserved.host == "10.0.0.10"
+    error_message = "The reserved output must retain the caller-provided reservation value."
+  }
 }
 
 run "invalid_reservation_empty_name_fails" {
