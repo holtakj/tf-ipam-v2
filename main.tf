@@ -274,67 +274,50 @@ locals {
   }
 
   # Reservation heat-map for terminal-friendly visualization. Use one dot per
-  # IP through /16, then scale each dot for larger networks.
+  # IP through /18, then scale each dot for larger networks.
   reservation_heatmap_total_ips = local.base_end_int - local.base_start_int + 1
   reservation_heatmap_bucket_count = min(
-    65536,
+    16384,
     max(1, floor(local.reservation_heatmap_total_ips))
   )
   reservation_heatmap_bucket_size = ceil(local.reservation_heatmap_total_ips / local.reservation_heatmap_bucket_count)
-  reservation_heatmap_bucket_indices = flatten([
-    for batch_index in range(ceil(local.reservation_heatmap_bucket_count / 1024)) : range(
-      batch_index * 1024,
-      min((batch_index + 1) * 1024, local.reservation_heatmap_bucket_count)
-    )
+  reservation_heatmap_reservation_bucket_ranges = [
+    for reservation in local.sorted_blocking_ranges : {
+      first_bucket_index = floor((reservation.start_int - local.base_start_int) / local.reservation_heatmap_bucket_size)
+      last_bucket_index  = floor((reservation.end_int - local.base_start_int) / local.reservation_heatmap_bucket_size)
+    }
+  ]
+
+  # Aggregate each reservation's occupied bucket span into Braille character masks.
+  # Batching keeps individual range calls within Terraform's 1024-value limit.
+  reservation_heatmap_reserved_braille_fragments = local.reserved_cidrs_non_overlapping ? flatten([
+    for bucket_range in local.reservation_heatmap_reservation_bucket_ranges : flatten([
+      for batch_index in range(ceil((floor(bucket_range.last_bucket_index / 8) - floor(bucket_range.first_bucket_index / 8) + 1) / 1024)) : [
+        for character_index in range(
+          floor(bucket_range.first_bucket_index / 8) + (batch_index * 1024),
+          min(floor(bucket_range.first_bucket_index / 8) + ((batch_index + 1) * 1024), floor(bucket_range.last_bucket_index / 8) + 1)
+        ) : {
+          character_index = character_index
+          braille_value = pow(2, min(7, bucket_range.last_bucket_index - (character_index * 8)) + 1) - pow(
+            2,
+            max(0, bucket_range.first_bucket_index - (character_index * 8))
+          )
+        }
+      ]
+    ])
+  ]) : []
+
+  reservation_heatmap_braille_values_by_character = {
+    for fragment in local.reservation_heatmap_reserved_braille_fragments : fragment.character_index => fragment.braille_value...
+  }
+
+  reservation_heatmap_reserved_ip_count = length(local.sorted_blocking_ranges) == 0 ? 0 : sum([
+    for reservation in local.sorted_blocking_ranges : reservation.end_int - reservation.start_int + 1
   ])
 
-  reservation_heatmap_bucket_ranges = [
-    for bucket_index in local.reservation_heatmap_bucket_indices : {
-      bucket_index = bucket_index
-      start_offset = bucket_index * local.reservation_heatmap_bucket_size
-      end_offset = min(
-        local.reservation_heatmap_total_ips - 1,
-        ((bucket_index + 1) * local.reservation_heatmap_bucket_size) - 1
-      )
-      start_int = local.base_start_int + (bucket_index * local.reservation_heatmap_bucket_size)
-      end_int = min(
-        local.base_end_int,
-        local.base_start_int + (((bucket_index + 1) * local.reservation_heatmap_bucket_size) - 1)
-      )
-    }
-  ]
-
-  reservation_heatmap_reserved_ips_by_bucket = [
-    for bucket in local.reservation_heatmap_bucket_ranges : (
-      length(local.sorted_blocking_ranges) == 0
-      ? 0
-      : sum([
-        for reservation in local.sorted_blocking_ranges : max(
-          0,
-          min(bucket.end_int, reservation.end_int) - max(bucket.start_int, reservation.start_int) + 1
-        )
-      ])
-    )
-  ]
-
   reservation_heatmap_usage_percent = floor(
-    100000 * 100 * sum(local.reservation_heatmap_reserved_ips_by_bucket) / local.reservation_heatmap_total_ips + 0.5
+    100000 * 100 * local.reservation_heatmap_reserved_ip_count / local.reservation_heatmap_total_ips + 0.5
   ) / 100000
-
-  reservation_heatmap_buckets = [
-    for bucket in local.reservation_heatmap_bucket_ranges : {
-      bucket_index = bucket.bucket_index
-      start_ip     = cidrhost(var.base_cidr, bucket.start_offset)
-      end_ip       = cidrhost(var.base_cidr, bucket.end_offset)
-      total_ips    = bucket.end_int - bucket.start_int + 1
-      reserved_ips = local.reservation_heatmap_reserved_ips_by_bucket[bucket.bucket_index]
-      reserved_ratio_percent = (
-        bucket.end_int - bucket.start_int + 1 == 0
-        ? 0
-        : 100 * local.reservation_heatmap_reserved_ips_by_bucket[bucket.bucket_index] / (bucket.end_int - bucket.start_int + 1)
-      )
-    }
-  ]
 
   reservation_heatmap_braille_values = [
     for character_index in flatten([
@@ -342,21 +325,17 @@ locals {
         batch_index * 1024,
         min((batch_index + 1) * 1024, ceil(local.reservation_heatmap_bucket_count / 8))
       )
-    ]) : sum([
-      for dot_index in range(8) : (
-        character_index * 8 + dot_index < local.reservation_heatmap_bucket_count &&
-        local.reservation_heatmap_reserved_ips_by_bucket[character_index * 8 + dot_index] > 0
-        ? pow(2, dot_index)
-        : 0
-      )
-    ])
+    ]) : sum(concat([0], lookup(local.reservation_heatmap_braille_values_by_character, character_index, [])))
   ]
 
   reservation_heatmap_strip = format("\n%s\n", join("\n", [
     for row_index, braille_row in chunklist(local.reservation_heatmap_braille_values, 128) : format("%-15s|%s| %-15s",
-      local.reservation_heatmap_buckets[row_index * 128 * 8].start_ip,
+      cidrhost(var.base_cidr, row_index * 128 * 8 * local.reservation_heatmap_bucket_size),
       join("", [for braille_value in braille_row : local.ip_octet_braille[braille_value]]),
-      local.reservation_heatmap_buckets[min((row_index + 1) * 128 * 8, local.reservation_heatmap_bucket_count) - 1].end_ip
+      cidrhost(var.base_cidr, min(
+        local.reservation_heatmap_total_ips - 1,
+        ((row_index + 1) * 128 * 8 * local.reservation_heatmap_bucket_size) - 1
+      ))
     )
   ]))
 

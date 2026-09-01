@@ -57,7 +57,7 @@ output "zzz_graph" {
     total_ip_count = local.reservation_heatmap_total_ips
     ips_per_dot   = local.reservation_heatmap_bucket_size
     usage_percent  = local.reservation_heatmap_usage_percent
-    legend         = "Dots represent reserved IP buckets, ordered bottom-to-top and left-to-right. If ips_per_dot > 1, each dot represents up to that many IPs."
+    legend         = "Dots represent reserved IPs, ordered bottom-to-top and left-to-right. If ips_per_dot > 1, each dot represents up to that many IPs."
     heatmap        = local.reservation_heatmap_strip
   }
 }

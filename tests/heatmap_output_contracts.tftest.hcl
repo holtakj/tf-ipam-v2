@@ -91,7 +91,7 @@ run "heatmap_uses_one_ip_per_dot_in_21" {
   }
 }
 
-run "heatmap_uses_one_ip_per_dot_at_16" {
+run "heatmap_scales_ips_per_dot_above_18" {
   command = plan
 
   variables {
@@ -101,12 +101,12 @@ run "heatmap_uses_one_ip_per_dot_at_16" {
   }
 
   assert {
-    condition     = output.zzz_graph.ips_per_dot == 1
-    error_message = "A /16 heatmap must continue to assign one IP per Braille dot."
+    condition     = output.zzz_graph.ips_per_dot == 4
+    error_message = "A /16 heatmap must use 4 IPs per dot to stay within the 16,384-dot limit."
   }
 }
 
-run "heatmap_scales_ips_per_dot_above_16" {
+run "heatmap_scales_ips_per_dot_in_15" {
   command = plan
 
   variables {
@@ -116,7 +116,7 @@ run "heatmap_scales_ips_per_dot_above_16" {
   }
 
   assert {
-    condition     = output.zzz_graph.ips_per_dot == 2
-    error_message = "A network larger than /16 must scale the IP count represented by each Braille dot."
+    condition     = output.zzz_graph.ips_per_dot == 8
+    error_message = "A /15 heatmap must use 8 IPs per dot to stay within the 16,384-dot limit."
   }
 }
