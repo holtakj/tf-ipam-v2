@@ -38,9 +38,3 @@ output "network_report_markdown" {
 # output "debug_braille" {
 #   value = module.ipam.debug_braille
 # }
-
-#write the mardown report to a file for easy viewing
-resource "local_file" "network_report_markdown" {
-  content  = module.ipam.network_report_markdown
-  filename = "network_report.md"
-}

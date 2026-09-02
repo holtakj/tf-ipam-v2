@@ -73,3 +73,20 @@ variable "suggest_count" {
   }
 }
 
+variable "render_report_to_file" {
+  description = "Whether to write the Markdown network report to network_report.md."
+  type        = bool
+  default     = false
+}
+
+variable "report_file_path" {
+  description = "Path and filename for the Markdown network report."
+  type        = string
+  default     = "network_report.md"
+
+  validation {
+    condition     = length(trimspace(var.report_file_path)) > 0
+    error_message = "The 'report_file_path' variable must not be empty or whitespace-only."
+  }
+}
+
