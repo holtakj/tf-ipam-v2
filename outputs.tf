@@ -62,9 +62,8 @@ output "zzz_graph" {
   }
 }
 
-output "network_report_markdown" {
-  description = "Markdown report summarizing network capacity, reservations, the heat-map, and next-free CIDR suggestions."
-  value = join("\n", concat([
+locals {
+  network_report_markdown = join("\n", concat([
     "# TF-IPAM Network report",
     "",
     format("- **Base CIDR:** `%s`", var.base_cidr),
@@ -122,6 +121,17 @@ output "network_report_markdown" {
     ] : [
     "| None | - |"
   ]))
+}
+
+output "network_report_markdown" {
+  description = "Markdown report summarizing network capacity, reservations, the heat-map, and next-free CIDR suggestions."
+  value       = local.network_report_markdown
+}
+
+resource "local_file" "network_report_markdown" {
+  count    = var.render_report_to_file ? 1 : 0
+  content  = local.network_report_markdown
+  filename = var.report_file_path
 }
 
 # used for debugging the Braille character mapping, but not part of the public interface

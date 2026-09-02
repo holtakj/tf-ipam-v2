@@ -35,6 +35,8 @@ This module supports **IPv4 only**.
 | `max_prefix` | `number` | `32` | Narrowest/smallest prefix included in computation and reserved CIDRs (`8..32`). |
 | `reserved` | `map(string)` | `{}` | Map of reservation name to a canonical IPv4 CIDR (e.g. `10.0.0.0/24`) **or** an IP range in `start-end` notation (e.g. `10.0.1.0-10.0.1.255`). Names are stable keys; values must be valid, non-overlapping, and within `base_cidr`. |
 | `suggest_count` | `number` | `1` | Number of next-free CIDR suggestions to return per size key (`1..1024`). |
+| `render_report_to_file` | `bool` | `false` | Write the Markdown report to the configured path when enabled. |
+| `report_file_path` | `string` | `network_report.md` | Path and filename for the Markdown report. Relative paths are resolved from the Terraform working directory. |
 
 ## Outputs
 
@@ -103,6 +105,9 @@ module "ipam" {
     db         = "10.0.16.0/20"
     quarantine = "10.0.24.0-10.0.24.63"  # IP range (not required to align to a CIDR boundary)
   }
+
+  render_report_to_file = true
+  report_file_path      = "reports/network_report.md"
 }
 ```
 
