@@ -113,7 +113,7 @@ locals {
     "| Name | CIDR or IP range |",
     "| --- | --- |"
     ], length(var.reserved) > 0 ? [
-    for reservation_name in sort(keys(var.reserved)) : format(
+    for reservation_name in local.reserved_names_sorted_by_ip : format(
       "| `%s` | `%s` |",
       reservation_name,
       var.reserved[reservation_name]

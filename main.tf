@@ -8,6 +8,34 @@ locals {
   # Reservation names are metadata only; uniqueness is enforced on CIDR values.
   reserved_cidrs_unique = length(distinct(local.reserved_cidrs)) == length(local.reserved_cidrs)
 
+  # Starting address of each reservation (CIDR, bare IP, or range), used to sort the report by IP.
+  reserved_start_ip_by_name = {
+    for reservation_name, reservation_value in var.reserved :
+    reservation_name => (
+      strcontains(reservation_value, "-") ?
+      split("-", reservation_value)[0] :
+      cidrhost(strcontains(reservation_value, "/") ? reservation_value : format("%s/32", reservation_value), 0)
+    )
+  }
+
+  reserved_start_int_by_name = {
+    for reservation_name, start_ip in local.reserved_start_ip_by_name :
+    reservation_name => (
+      tonumber(split(".", start_ip)[0]) * 16777216 +
+      tonumber(split(".", start_ip)[1]) * 65536 +
+      tonumber(split(".", start_ip)[2]) * 256 +
+      tonumber(split(".", start_ip)[3])
+    )
+  }
+
+  # Reservation names ordered by ascending starting IP address (ties broken by name).
+  reserved_names_sorted_by_ip = [
+    for sortable in sort([
+      for reservation_name, start_int in local.reserved_start_int_by_name :
+      format("%012.0f:%s", start_int, reservation_name)
+    ]) : join(":", slice(split(":", sortable), 1, length(split(":", sortable))))
+  ]
+
 
   # Parse the base prefix once.
   base_prefix_length  = tonumber(split("/", var.base_cidr)[1])
